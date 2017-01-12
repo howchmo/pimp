@@ -1,0 +1,16 @@
+{
+  "name": "pimpnode",
+  "version": "0.0.5",
+  "description": "Personal Information Management Program (PIMP Your Data!)",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Howchmo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongodb": "^2.2.20"
+  }
+}
