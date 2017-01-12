@@ -1,0 +1,159 @@
+body {
+	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+	font-size: 100%;
+	margin:0px;
+	overflow-x:hidden;
+}
+
+a {
+	text-decoration:none;
+}
+
+.header {
+	background:#DAECFF;
+	border-bottom-style:solid;
+	border-bottom-width:1px;
+	display: block;
+	font-size:24px;
+	font-weight:bold;
+	height: 30px;
+	line-height: 20px;
+	cursor: move;
+	padding:2px;
+	margin-bottom:2px;
+	width:100%;
+	top:0px;
+	left:0px;
+	right:0px;
+	bottom:0px;
+}
+
+.box {
+	height:180px;
+	width:320px;
+	position:relative;
+	background-color:#EEEEEE;
+}
+
+.item-wrapper {
+	position:absolute;
+	overflow-y:auto;
+	left:0px;
+	right:0px;
+	bottom:0px;
+	top:35px;
+	width:100%;
+}
+
+table.item {
+	border-collapse:collapse;
+}
+
+.left-column {
+	position:absolute;
+	top:0px;
+	width:15%;
+	border-right-style:solid;
+	border-right-width:1px;
+	height:100%;
+	z-index:-1;
+	margin-left:-5px;
+	background:#F5F5F5;
+}
+
+.left-icon-block {
+	min-width:5px;
+	font-family:sans-serif;
+	font-weight:bold;
+	font-size:12pt;
+	padding-bottom:5px;
+}
+
+.right-icon-block {
+	width:8px;
+	font-family:sans-serif;
+	font-weight:bold;
+	font-size:12pt;
+	padding-bottom:5px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.left-text-block {
+	vertical-align:top;
+	width:15%;
+	min-height:26px;
+	text-align:right;
+	font-weight:bold;
+	font-size:12pt;
+	font-family:serif;
+	height:100%;
+	padding-right:8px;
+	padding-bottom:5px;
+}
+
+.right-text-block {
+	vertical-align:top;
+	width:85%;
+	min-height:26px;
+	text-align:left;
+	padding-left:2px;
+	padding-bottom:5px;
+	font-family:sans-serif;
+	font-size:12pt;
+}
+
+.title-button {
+	float:right;
+	border-style:solid;
+	border-color:white;
+	border-width:1px;
+	color:white;
+	background:black;
+	line-height:14px;
+	padding-bottom:3px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+.title-button-container {
+	margin-top:4px;
+	margin-right:10px;
+	transform-origin:100% 0%;
+	transform: scale(0.7);
+	float:right;
+	cursor:pointer;
+}
+
+.item-title {
+	float:left;
+	width:80%;
+}
+
+.internal-table {
+	width:100%;
+	border-collapse:collapse;
+	vertical-align:top;
+}
+
+.internal-table td {
+	border: 1px solid white;
+}
+
+.internal-table tr td:nth-child(even) {
+	background:whitesmoke;
+}
+
+.internal-table thead tr td {
+	color:white;
+	text-align:center;
+	background:black !important;
+	font-size:6pt;
+	font-weight:bold;
+}
+
+
