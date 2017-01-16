@@ -3,8 +3,9 @@ $(document).ready(start());
 var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
+var localItem;
 
-function addNewRow( leftText, rightText, link )
+function addNewRow( i, leftText, rightText, link )
 {
 	blockIdx++;
 	var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
@@ -20,10 +21,9 @@ function addNewRow( leftText, rightText, link )
 	}
 	else
 	{
- 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText});
+		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText});
 		$newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
 		$newRightIcon.html("<span class='right-icon' onclick='createLinkedItem( $(this) );'>&#9632;</span>");
-			
 	}
 	$newLeftIcon.html("&nbsp;");
 	$newRow.append($newLeft);
@@ -32,10 +32,26 @@ function addNewRow( leftText, rightText, link )
 	$newRow.append($newRightIcon);
 	//$("tr[block="+abi+"]").after($newRow);
 	$("table.item tbody").append($newRow);
+	$(".left-text-block").focus(editHtml);
+	$(".right-text-block").focus(editHtml);
+}
+
+function editHtml()
+{
+	var itemIdx = $(this).attr("block");
+	var htmlString = $(this).html();
+	var txt = document.createElement("textarea");
+	txt.innerHTML = htmlString;
+	htmlString = txt.value;
+	// var htmlString = localItem.doc[itemIdx];
+	console.log(localItem.doc[itemIdx]);;
+	console.log("htmlString = "+htmlString);
+	$(this).text(htmlString);
 }
 
 function populate(item)
 {
+	localItem = item;
 	$(".item-title").html(item.title);
 	for( var i = 0; i < item.doc.length; i++ )
 	{
@@ -44,11 +60,11 @@ function populate(item)
 			var val = item.doc[i][key];
 			if( $.isPlainObject(val) )
 			{
-				addNewRow( key, val.text, val.url);
+				addNewRow( i, key, val.text, val.url);
 			}
 			else
 			{
-				addNewRow( key, val);
+				addNewRow( i, key, val);
 			}
 		}
 	}
@@ -176,12 +192,9 @@ function jsonifyItem()
 
 function start()
 {
-
 	$(function() { //DOM Ready
 
 		itemId = window.location.hash.substr(1);
-		
-		console.log(itemId);
 
 		$(".editable").click(function(){
 			$(this).attr("contenteditable","true");
@@ -195,10 +208,10 @@ function start()
 		});
 
 		$(".unhide-button").click(function() {
+			saveItem();
 		});
 
 		$(".close-button").click(function() {
-			saveItem();
 		});
 /*
 		$(".right-icon").click(function() {
@@ -269,8 +282,9 @@ function start()
 	{
 		var pos = getCaretCharacterOffsetWithin(document.activeElement);
 		var text = $(document.activeElement).text();
+		console.log("$(document.activeElement).text() = "+text); 
 		var end = text.length;
-		if( e.which == 13 )
+		if( e.which == 13 ) // ENTER
 		{
 			if( !e.shiftKey )
 			{
@@ -311,7 +325,7 @@ function start()
 				}
 			}
 		}
-		else if( e.which == 8  && pos == 0 )
+		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
 			if( $(document.activeElement).hasClass("right-text-block") )
 			{
@@ -380,6 +394,7 @@ function ajaxOnResult(evt) {
 	if ((evt.currentTarget.readyState == 4) && (evt.currentTarget.status == 200 || evt.currentTarget.status == 0))
 	{
 		var item = JSON.parse(evt.currentTarget.responseText);
+		console.log(JSON.stringify(item));
 		populate(item);
 	}
 	else

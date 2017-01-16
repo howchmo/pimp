@@ -53,6 +53,7 @@ table.item {
 	position:absolute;
 	top:0px;
 	width:15%;
+	min-width:150px;
 	border-right-style:solid;
 	border-right-width:1px;
 	height:100%;
@@ -86,6 +87,7 @@ table.item {
 .left-text-block {
 	vertical-align:top;
 	width:15%;
+	min-width:140px;
 	min-height:26px;
 	text-align:right;
 	font-weight:bold;
@@ -121,11 +123,11 @@ table.item {
 }
 
 .title-button-container {
-	margin-top:4px;
-	margin-right:10px;
+	position:absolute;
+	top:5px;
+	right:5px;
 	transform-origin:100% 0%;
 	transform: scale(0.7);
-	float:right;
 	cursor:pointer;
 }
 
@@ -154,6 +156,9 @@ table.item {
 	background:black !important;
 	font-size:6pt;
 	font-weight:bold;
+}
+
+.note {
 }
 
 
