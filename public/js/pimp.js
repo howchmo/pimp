@@ -34,6 +34,14 @@ function addNewRow( i, leftText, rightText, link )
 	$("table.item tbody").append($newRow);
 	$(".left-text-block").focus(editHtml);
 	$(".right-text-block").focus(editHtml);
+	$(".left-text-block").blur(renderHtml);
+	$(".right-text-block").blur(renderHtml);
+}
+
+function renderHtml()
+{
+	console.log("renderHtml()");
+	$(this).html($(this).text());
 }
 
 function editHtml()
@@ -200,6 +208,7 @@ function start()
 			$(this).attr("contenteditable","true");
 			$(this).focus();
 		}).blur(function(){
+				console.log("blur");
 		});
 
 		$(".clone-button").click(function() {
@@ -319,7 +328,8 @@ function start()
 				}
 				else if( document.activeElement.className == 'right-text-block' )
 				{
-					$(".right-text-block[block='"+activeBlockIdx+"']").html(oldStr);
+					console.log("oldStr = "+oldStr);
+					//$(".right-text-block[block='"+activeBlockIdx+"']").html(oldStr);
 					$newRight.html(newStr);
 					$newRight.focus();
 				}
@@ -437,6 +447,7 @@ function createLinkedItem( rightIcon ) {
 		li["born"] = new Date();
 		li["doc"] = [{"":""}];
 		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
+		console.log("createLinkedItem si = "+si);
 		$.post("pimp/", {"string":si}, function(data) {
 			var link = "#"+data._id;
 			$rightTextBlock.attr("link", link);
