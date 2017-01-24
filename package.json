@@ -10,6 +10,8 @@
   "author": "Howchmo",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.16.0",
+    "connect": "^3.5.0",
     "express": "^4.14.0",
     "mongodb": "^2.2.20"
   }

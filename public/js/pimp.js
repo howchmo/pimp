@@ -212,8 +212,11 @@ function start()
 		});
 
 		$(".clone-button").click(function() {
+			/*
 			console.log("clone");
 			ajaxLoad("pimp/"+itemId, ajaxOnResult);
+			*/
+			saveItem();
 		});
 
 		$(".unhide-button").click(function() {
@@ -221,6 +224,7 @@ function start()
 		});
 
 		$(".close-button").click(function() {
+			saveItem();
 		});
 /*
 		$(".right-icon").click(function() {
@@ -393,7 +397,7 @@ function start()
 }
 
 function ajaxLoad(uri, callback) {
-	console.log(uri);
+	console.log("ajaxLoad('"+uri+"')");
 	var request = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 	request.onreadystatechange = callback;
 	request.open("GET", uri);
@@ -415,7 +419,7 @@ function ajaxOnResult(evt) {
 
 function saveItem() {
 	var str = JSON.stringify(jsonifyItem(), function(key, value) { return value === "" ? "" : value });
-	console.log(str);
+	console.log("saveItem("+str+") itemId = "+itemId);
 	if( itemId == "" )
 	{
 		$.post("pimp/", {"string":str}, function(data) {
@@ -432,8 +436,8 @@ function saveItem() {
 			data:JSON.stringify({"string":str}),
     	dataType: "json",
 			success: function(data) {
-				window.location.href = '#'+data._id;
-				window.location.reload();
+				//window.location.href = '#'+data._id;
+				//window.location.reload();
 			}
 		})
 	}
@@ -449,7 +453,8 @@ function createLinkedItem( rightIcon ) {
 		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
 		console.log("createLinkedItem si = "+si);
 		$.post("pimp/", {"string":si}, function(data) {
-			var link = "#"+data._id;
+			console.log(JSON.stringify(data));
+			var link = "#"+data;
 			$rightTextBlock.attr("link", link);
 			rightIcon.prop("onclick", null);
 			rightIcon.html("<a target='_blank' href='"+link+"'>&#9654;</a>");

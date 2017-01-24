@@ -1,7 +1,6 @@
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
 
-
 var Server = mongo.Server,
 Db = mongo.Db,
 BSON = mongo.BSONPure;
@@ -40,37 +39,39 @@ res.send(items);
 });
 };
 
-exports.addItem = function(req, res) {
-var item = JSON.parse(req.body["string"]);
-console.log('Adding item: ' + JSON.stringify(item));
-db.collection('items', function(err, collection) {
-collection.insert(item, {safe:true}, function(err, result) {
-if (err) {
-res.send({'error':'An error has occurred'});
-} else {
-console.log('Success: ' + JSON.stringify(result[0]));
-res.send(result[0]);
-}
-});
-});
+exports.addItem = function(req, res)
+{
+	var item = JSON.parse(req.body.string);
+	console.log("addItem( title = '"+item.title+"')");
+	db.collection('items').insertOne ( item, function( err, result ) {
+		console.log('Success:');
+		console.log('     ' + result.insertedId);
+		res.send(result.insertedId);
+	});
 }
  
-exports.updateItem = function(req, res) {
+exports.updateItem = function(req, res)
+{
 	var id = req.params.id;
 	var item = JSON.parse(req.body["string"]);
 	console.log("Update item: " +id + " : "+ JSON.stringify(item));
-	db.collection('items', function(err, collection) {
-		collection.update({'_id':new BSON.ObjectID(id)}, item, {safe:true}, function(err, result) {
-			if (err) {
+	db.collection('items').updateOne({'_id':ObjectID(id)}, item, {safe:true},
+		function(err, result)
+		{
+			if (err)
+			{
 				console.log('Error updating item: ' + err);
 				res.send({'error':'An error has occurred'});
-			} else {
+			}
+			else
+			{
 				console.log('' + result + ' document(s) updated');
 				item._id = id;
+				console.log(JSON.stringify(item));
 				res.send(item);
 			}
-		});
-	});
+		}
+	);
 }
  
 exports.deleteItem = function(req, res) {

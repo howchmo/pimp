@@ -1,14 +1,13 @@
-var path = require('path')
-var express = require('express'),
-pimp = require('./routes/pimp');
+var express = require('express');
+var bodyParser = require('body-parser');
+var path = require('path');
+var pimp = require('./routes/pimp');
 
 var app = express();
 
-//app.configure(function () {
-//	app.use(express.logger('dev')); /* 'default', 'short', 'tiny', 'dev' */
-//	app.use(express.bodyParser());
-//});
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -19,5 +18,5 @@ app.post('/pimp', pimp.addItem);
 app.put('/pimp/:id', pimp.updateItem);
 app.delete('/pimp/:id', pimp.deleteItem);
 
-app.listen(3000);
 console.log('Listening on port 3000...');
+app.listen(3000);
