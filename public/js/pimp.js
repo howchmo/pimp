@@ -40,12 +40,13 @@ function addNewRow( i, leftText, rightText, link )
 
 function renderHtml()
 {
-	console.log("renderHtml()");
-	$(this).html($(this).text());
+//	console.log("renderHtml()");
+//	$(this).html($(this).text());
 }
 
 function editHtml()
 {
+/*
 	var itemIdx = $(this).attr("block");
 	var htmlString = $(this).html();
 	var txt = document.createElement("textarea");
@@ -55,6 +56,7 @@ function editHtml()
 	console.log(localItem.doc[itemIdx]);;
 	console.log("htmlString = "+htmlString);
 	$(this).text(htmlString);
+*/
 }
 
 function populate(item)
