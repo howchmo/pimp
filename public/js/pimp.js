@@ -10,22 +10,26 @@ function addNewRow( i, leftText, rightText, link )
 	blockIdx++;
 	var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
 	var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx, 'html':leftText});
-	var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
-	var $newRight;
+	var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
+	var $newLeft;
 	var $newRightIcon;
-	if( link != null )
+	if( rightText.startsWith("http://") || rightText.startsWith("https://") )
 	{
- 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':'<font color="blue">'+rightText+'</font>', 'link':link});
-		$newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx, 'link':link});
-		$newRightIcon.html("<span class='right-icon'><a target='_blank' href='"+link+"'>&#9654;</a></span>");
+		link = rightText;
+	}
+	if( link == null )
+	{
+		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText});
+		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
+		$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#9670;</span>");
 	}
 	else
 	{
-		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText});
-		$newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
-		$newRightIcon.html("<span class='right-icon' onclick='createLinkedItem( $(this) );'>&#9632;</span>");
+ 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':'<font color="blue">'+rightText+'</font>', 'link':link});
+		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
+		$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>&#9654;</a></span>");
 	}
-	$newLeftIcon.html("&nbsp;");
+	$newRightIcon.html("&nbsp;");
 	$newRow.append($newLeft);
 	$newRow.append($newLeftIcon);
 	$newRow.append($newRight);
@@ -62,7 +66,11 @@ function editHtml()
 function populate(item)
 {
 	localItem = item;
-	$(".item-title").html(item.title);
+	console.log("item.title = '"+item.title+"'");
+	if( item.title == " " )
+		$(".item-title").html("...");
+	else
+		$(".item-title").html(item.title);
 	for( var i = 0; i < item.doc.length; i++ )
 	{
 		for( var key in item.doc[i] )
@@ -318,8 +326,8 @@ function start()
 				var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
 				var $newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx});
 				var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
-				$newLeftIcon.html("&nbsp;");
-				$newRightIcon.html("<span class='right-icon' onclick='createLinkedItem( $(this) );'>&#9632;</span>");
+				$newRightIcon.html("&nbsp;");
+				$newLeftIcon.html("<span class='right-icon' onclick='createLinkedItem( $(this) );'>&#9670;</span>");
 				$newRow.append($newLeft);
 				$newRow.append($newLeftIcon);
 				$newRow.append($newRight);
@@ -448,6 +456,11 @@ function saveItem() {
 function createLinkedItem( rightIcon ) {
 	var $rightTextBlock = rightIcon.parent().parent().find(".right-text-block");
 	var text = $rightTextBlock.text();
+	if( text == "" )
+	{
+		$rightTextBlock.text(" ");
+		text = " ";
+	}
 		var li = {};
 		li["title"] = text;
 		li["born"] = new Date();

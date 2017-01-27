@@ -63,15 +63,25 @@ table.item {
 }
 
 .left-icon-block {
-	min-width:5px;
+	vertical-align:top;
+	max-width:15px;
+	min-width:15px;
 	font-family:sans-serif;
 	font-weight:bold;
 	font-size:12pt;
 	padding-bottom:5px;
 }
 
+.left-icon {
+	position:relative;
+	top:-3px;
+	max-width:15px;
+}
+
 .right-icon-block {
-	width:8px;
+	vertical-align:top;
+	max-width:8px;
+	min-width:8px;
 	font-family:sans-serif;
 	font-weight:bold;
 	font-size:12pt;
@@ -144,6 +154,7 @@ table.item {
 
 .internal-table td {
 	border: 1px solid white;
+	vertical-align:top;
 }
 
 .internal-table tr td:nth-child(even) {
