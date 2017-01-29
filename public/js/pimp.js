@@ -15,7 +15,7 @@ function addNewRow( i, leftText, rightText, link )
 	var $newRightIcon;
 	if( rightText.startsWith("http://") || rightText.startsWith("https://") )
 	{
-		link = rightText;
+		link = rightText.replace("<br>", "");
 	}
 	if( link == null )
 	{
