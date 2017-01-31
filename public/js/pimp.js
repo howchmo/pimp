@@ -65,6 +65,9 @@ function editHtml()
 
 function populate(item)
 {
+	// set the webpage's title
+	document.title = "PIMP: "+item.title;
+
 	localItem = item;
 	console.log("item.title = '"+item.title+"'");
 	if( item.title == " " )
@@ -343,11 +346,12 @@ function start()
 				else if( document.activeElement.className == 'right-text-block' )
 				{
 					console.log("oldStr = "+oldStr);
-					//$(".right-text-block[block='"+activeBlockIdx+"']").html(oldStr);
-					$newRight.html(newStr);
+					$(".right-text-block[block='"+activeBlockIdx+"']").text(oldStr);
+					$newRight.text(newStr);
 					$newRight.focus();
 				}
 			}
+			saveItem();
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
@@ -401,6 +405,7 @@ function start()
 					rightBlock.focus();
 				}
 			}
+			saveItem();
 		}
 	});
 
