@@ -4,6 +4,9 @@ var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
 var localItem;
+var DIAMOND = "&#9670;"; // BLACK DIAMOND
+var DASH = "&#8212;"; // EM DASH
+var RIGHTPOINTER = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
 
 function addNewRow( i, leftText, rightText, link )
 {
@@ -21,13 +24,18 @@ function addNewRow( i, leftText, rightText, link )
 	{
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText});
 		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
-		$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#9670;</span>");
+		if( rightText == "" )
+			$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+		else
+		{
+			$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+		}
 	}
 	else
 	{
  		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':'<font color="blue">'+rightText+'</font>', 'link':link});
 		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
-		$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>&#9654;</a></span>");
+		$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
 	}
 	$newRightIcon.html("&nbsp;");
 	$newRow.append($newLeft);
@@ -221,7 +229,6 @@ function start()
 			$(this).attr("contenteditable","true");
 			$(this).focus();
 		}).blur(function(){
-				console.log("blur");
 		});
 
 		$(".clone-button").click(function() {
@@ -308,7 +315,6 @@ function start()
 	{
 		var pos = getCaretCharacterOffsetWithin(document.activeElement);
 		var text = $(document.activeElement).text();
-		console.log("$(document.activeElement).text() = "+text); 
 		var end = text.length;
 		if( e.which == 13 ) // ENTER
 		{
@@ -320,7 +326,6 @@ function start()
 				newStr = text.substring(pos,end);
 				if( pos < end )
 					e.preventDefault();
-				console.log(pos+" "+end+" '"+oldStr+"' '"+newStr+"'");
 				var activeBlockIdx = $(document.activeElement).attr("block");
 				//addNewRow(activeBlockIdx);
 				blockIdx++;
@@ -330,7 +335,7 @@ function start()
 				var $newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx});
 				var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
 				$newRightIcon.html("&nbsp;");
-				$newLeftIcon.html("<span class='right-icon' onclick='createLinkedItem( $(this) );'>&#9670;</span>");
+				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
 				$newRow.append($newLeft);
 				$newRow.append($newLeftIcon);
 				$newRow.append($newRight);
@@ -345,13 +350,16 @@ function start()
 				}
 				else if( document.activeElement.className == 'right-text-block' )
 				{
-					console.log("oldStr = "+oldStr);
 					$(".right-text-block[block='"+activeBlockIdx+"']").text(oldStr);
 					$newRight.text(newStr);
 					$newRight.focus();
 				}
 			}
 			saveItem();
+		}
+		else if( $(document.activeElement).hasClass("right-text-block") && e.which == 8 && $(document.activeElement).text().length == 1 )
+		{
+			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
@@ -407,6 +415,16 @@ function start()
 			}
 			saveItem();
 		}
+		else
+		{
+			if( document.activeElement.className == "right-text-block" )
+			{
+				if( end == 0 )
+				{
+					$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+				}
+			}
+		}
 	});
 
 }
@@ -434,7 +452,8 @@ function ajaxOnResult(evt) {
 
 function saveItem() {
 	var str = JSON.stringify(jsonifyItem(), function(key, value) { return value === "" ? "" : value });
-	console.log("saveItem("+str+") itemId = "+itemId);
+	console.log("saveItem("+itemId+")")
+	// console.log("	"+str);
 	if( itemId == "" )
 	{
 		$.post("pimp/", {"string":str}, function(data) {
@@ -471,9 +490,7 @@ function createLinkedItem( rightIcon ) {
 		li["born"] = new Date();
 		li["doc"] = [{"":""}];
 		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
-		console.log("createLinkedItem si = "+si);
 		$.post("pimp/", {"string":si}, function(data) {
-			console.log(JSON.stringify(data));
 			var link = "#"+data;
 			$rightTextBlock.attr("link", link);
 			rightIcon.prop("onclick", null);
