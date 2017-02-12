@@ -16,9 +16,10 @@ function addNewRow( i, leftText, rightText, link )
 	var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
 	var $newLeft;
 	var $newRightIcon;
+	rightText = rightText.replace("<br>", "");
 	if( rightText.startsWith("http://") || rightText.startsWith("https://") )
 	{
-		link = rightText.replace("<br>", "");
+		link = rightText;
 	}
 	if( link == null )
 	{
@@ -33,7 +34,7 @@ function addNewRow( i, leftText, rightText, link )
 	}
 	else
 	{
- 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':'<font color="blue">'+rightText+'</font>', 'link':link});
+ 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText, 'link':link});
 		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
 		$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
 	}
