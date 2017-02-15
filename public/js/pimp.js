@@ -1,5 +1,10 @@
 $(document).ready(start());
 
+function toHtml( str )
+{
+	return mmd(str);
+}
+
 var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
@@ -10,6 +15,9 @@ var RIGHTPOINTER = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
 
 function addNewRow( i, leftText, rightText, link )
 {
+	if( leftText != undefined && rightText != undefined )
+{
+
 	blockIdx++;
 	var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
 	var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx, 'html':leftText});
@@ -23,7 +31,6 @@ function addNewRow( i, leftText, rightText, link )
 	}
 	if( link == null )
 	{
-		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText});
 		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
 		if( rightText == "" )
 			$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
@@ -31,12 +38,13 @@ function addNewRow( i, leftText, rightText, link )
 		{
 			$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
 		}
+		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 	}
 	else
 	{
- 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'html':rightText, 'link':link});
 		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
 		$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
+ 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':rightText, 'link':link});
 	}
 	$newRightIcon.html("&nbsp;");
 	$newRow.append($newLeft);
@@ -45,31 +53,39 @@ function addNewRow( i, leftText, rightText, link )
 	$newRow.append($newRightIcon);
 	//$("tr[block="+abi+"]").after($newRow);
 	$("table.item tbody").append($newRow);
-	$(".left-text-block").focus(editHtml);
-	$(".right-text-block").focus(editHtml);
-	$(".left-text-block").blur(renderHtml);
-	$(".right-text-block").blur(renderHtml);
+	// $(".left-text-block").focus(edit);
+	// $(".left-text-block").blur(render);
+	$(".right-text-block").focus(edit);
+	$(".right-text-block").blur(render);
+}
 }
 
-function renderHtml()
+function render( evt )
 {
-//	console.log("renderHtml()");
-//	$(this).html($(this).text());
+	var t = $(this);
+	clearTimeout(render.timeout);
+	render.timeout = setTimeout(function()
+	{
+		var itemIdx = t.attr("block");
+		var source = t.text();
+		console.log("render() "+itemIdx+" "+source);
+		t.attr("source", source);
+		console.log("	"+toHtml(source));
+		t.html(toHtml(source));
+	}, 1);
 }
 
-function editHtml()
+function edit( evt )
 {
-/*
-	var itemIdx = $(this).attr("block");
-	var htmlString = $(this).html();
-	var txt = document.createElement("textarea");
-	txt.innerHTML = htmlString;
-	htmlString = txt.value;
-	// var htmlString = localItem.doc[itemIdx];
-	console.log(localItem.doc[itemIdx]);;
-	console.log("htmlString = "+htmlString);
-	$(this).text(htmlString);
-*/
+	var t = $(this);
+	clearTimeout(edit.timeout);
+	edit.timeout = setTimeout(function()
+	{
+		var itemIdx = t.attr("block");
+		var source = t.attr("source");
+		console.log("edit() "+itemIdx+" "+source);
+		t.text(source);
+	}, 1);
 }
 
 function populate(item)
@@ -203,7 +219,7 @@ function jsonifyItem()
 	$(".item tbody").children("tr").each(function() {
 		var key = $(this).find(".left-text-block").text();
 		var $rightTextBlock = $(this).find(".right-text-block");
-		value = $rightTextBlock.html();
+		value = $rightTextBlock.attr("source");
 		if( first_time_thru )
 		{
 			first_time_thru = false;
@@ -351,8 +367,13 @@ function start()
 				}
 				else if( document.activeElement.className == 'right-text-block' )
 				{
+					console.log("oldStr = "+oldStr+", newStr = "+newStr);
+					$(".right-text-block[block='"+activeBlockIdx+"']").attr("source", oldStr);
+					$newRight.attr("source", newStr);
 					$(".right-text-block[block='"+activeBlockIdx+"']").text(oldStr);
 					$newRight.text(newStr);
+					$newRight.focus(edit);
+					$newRight.blur(render);
 					$newRight.focus();
 				}
 			}

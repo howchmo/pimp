@@ -146,6 +146,8 @@ table.item {
 .item-title {
 	float:left;
 	width:80%;
+	padding-top:3px;
+	padding-left:6px;
 }
 
 .internal-table {
