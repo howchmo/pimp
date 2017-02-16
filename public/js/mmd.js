@@ -26,9 +26,11 @@
 		R=
 		{
 			'* ':[/\n\* /,'<li>','</li>'],
-			'1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
+			// '1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
 			' ':[/\n    /,'<pre><code>','</pre></code>','\n'],
-			'>':[/\n> /,'<blockquote>','</blockquote>','\n']
+			'>':[/\n> /,'<blockquote>','</blockquote>','\n'],
+			'+':[/\n\+ /,'<input type="checkbox">',''],
+			'-':[/\n\- /,'<input type="checkbox" checked>','']
 		}[f];
 		h+=
 			R?R[1]+('\n'+b)
