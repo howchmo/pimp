@@ -2,7 +2,7 @@ $(document).ready(start());
 
 function toHtml( str )
 {
-	return mmd(str);
+	return(mmd(str));
 }
 
 var blockIdx = 0;
@@ -13,51 +13,60 @@ var DIAMOND = "&#9670;"; // BLACK DIAMOND
 var DASH = "&#8212;"; // EM DASH
 var RIGHTPOINTER = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
 
-function addNewRow( i, leftText, rightText, link )
+function addNewRow( i, leftText, rightText )
 {
 	if( leftText != undefined && rightText != undefined )
-{
-
-	blockIdx++;
-	var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
-	var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx, 'html':leftText});
-	var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
-	var $newLeft;
-	var $newRightIcon;
-	rightText = rightText.replace("<br>", "");
-	if( rightText.startsWith("http://") || rightText.startsWith("https://") )
 	{
-		link = rightText;
-	}
-	if( link == null )
-	{
-		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
-		if( rightText == "" )
-			$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+		var link = null;
+		blockIdx++;
+		var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
+		var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx, 'html':leftText});
+		var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
+		var $newLeft;
+		var $newRightIcon;
+		rightText = rightText.replace("<br>", "");
+		if( rightText.startsWith("http://") || rightText.startsWith("https://") || rightText.startsWith("file:////") )
+		{
+			link = rightText;
+		}
+		else if( rightText.startsWith("[") )
+		{
+			link = rightText.split('(')[1];
+			link = link.substring(0,link.length-1);
+		}
+		if( link == null )
+		{
+			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
+			if( rightText == "" )
+				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+			else
+			{
+				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+			}
+		}
 		else
 		{
-			$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
+			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
 		}
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
+		$newRightIcon.html("&nbsp;");
+		$newRow.append($newLeft);
+		$newRow.append($newLeftIcon);
+		$newRow.append($newRight);
+		$newRow.append($newRightIcon);
+		//$("tr[block="+abi+"]").after($newRow);
+		$("table.item tbody").append($newRow);
+		// $(".left-text-block").focus(edit);
+		// $(".left-text-block").blur(render);
+		$(".right-text-block").focus(edit);
+		$(".right-text-block").blur(render);
 	}
-	else
-	{
-		$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
-		$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
- 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':rightText, 'link':link});
-	}
-	$newRightIcon.html("&nbsp;");
-	$newRow.append($newLeft);
-	$newRow.append($newLeftIcon);
-	$newRow.append($newRight);
-	$newRow.append($newRightIcon);
-	//$("tr[block="+abi+"]").after($newRow);
-	$("table.item tbody").append($newRow);
-	// $(".left-text-block").focus(edit);
-	// $(".left-text-block").blur(render);
-	$(".right-text-block").focus(edit);
-	$(".right-text-block").blur(render);
 }
+
+function extractHref( str )
+{
+	return(str.split("\"")[1]);
 }
 
 function render( evt )
@@ -66,12 +75,33 @@ function render( evt )
 	clearTimeout(render.timeout);
 	render.timeout = setTimeout(function()
 	{
-		var itemIdx = t.attr("block");
+		var blockIdx = t.attr("block");
 		var source = t.text();
-		console.log("render() "+itemIdx+" "+source);
+		console.log("render() "+blockIdx+" "+source);
 		t.attr("source", source);
-		console.log("	"+toHtml(source));
-		t.html(toHtml(source));
+		var html = toHtml(source);
+		console.log("	"+html);
+		if( html.startsWith("<a href=\"") )
+		{
+			link = extractHref(html);
+			console.log("	link = '"+link+"'");
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
+			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+		}
+		else if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
+		{
+			link = html;
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
+			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+		}
+		else
+		{
+			if( html == "" )
+				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+			else
+				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+		}
+		t.html(html);
 	}, 1);
 }
 
@@ -106,15 +136,14 @@ function populate(item)
 			var val = item.doc[i][key];
 			if( $.isPlainObject(val) )
 			{
-				addNewRow( i, key, val.text, val.url);
+				//addNewRow( i, key, val.text, val.url);
+				var title = val.text;
+				var url = val.url;
+				val = "["+title+"]("+val.url+")";
 			}
-			else
-			{
-				addNewRow( i, key, val);
-			}
+			addNewRow( i, key, val);
 		}
 	}
-//	addNewRow("","");
 }
 
 function getCaretCharacterOffsetWithin(element) {
@@ -344,7 +373,6 @@ function start()
 				if( pos < end )
 					e.preventDefault();
 				var activeBlockIdx = $(document.activeElement).attr("block");
-				//addNewRow(activeBlockIdx);
 				blockIdx++;
 				var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
 				var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx});
@@ -512,9 +540,13 @@ function createLinkedItem( rightIcon ) {
 		li["born"] = new Date();
 		li["doc"] = [{"":""}];
 		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
-		$.post("pimp/", {"string":si}, function(data) {
+		$.post("pimp/", {"string":si}, function(data)
+		{
 			var link = "#"+data;
+			var source = "["+text+"]("+link+")";
 			$rightTextBlock.attr("link", link);
+			$rightTextBlock.attr("source", source);
+			$rightTextBlock.html(toHtml(source));
 			rightIcon.prop("onclick", null);
 			rightIcon.html("<a target='_blank' href='"+link+"'>&#9654;</a>");
 			window.open(link);

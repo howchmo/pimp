@@ -25,10 +25,12 @@
 		f=b[0];
 		R=
 		{
-			'*':[/\n\* /,'<li>','</li>'],
-			'1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
+			'* ':[/\n\* /,'<li>','</li>'],
+			// '1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
 			' ':[/\n    /,'<pre><code>','</pre></code>','\n'],
-			'>':[/\n> /,'<blockquote>','</blockquote>','\n']
+			'>':[/\n> /,'<blockquote>','</blockquote>','\n'],
+			'+':[/\n\+ /,'<input type="checkbox">',''],
+			'-':[/\n\- /,'<input type="checkbox" checked>','']
 		}[f];
 		h+=
 			R?R[1]+('\n'+b)
@@ -38,7 +40,7 @@
 				.join(R[3]||'</li>\n<li>')+R[2]:
 			f=='#'?'<h'+(f=b.indexOf(' '))+'>'+inlineEscape(b.slice(f+1))+'</h'+f+'>':
 			f=='<'?b:
-			'<p>'+inlineEscape(b)+'</p>';
+			''+inlineEscape(b)+'';
 	});
 	return h;
 };
