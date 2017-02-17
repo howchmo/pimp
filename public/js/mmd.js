@@ -25,15 +25,19 @@
 		f=b[0];
 		R=
 		{
-			'* ':[/\n\* /,'<li>','</li>'],
+			'*':[/\n\* /,'<li>','</li>'],
 			// '1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
 			' ':[/\n    /,'<pre><code>','</pre></code>','\n'],
 			'>':[/\n> /,'<blockquote>','</blockquote>','\n'],
-			'+':[/\n\+ /,'<input type="checkbox">',''],
-			'-':[/\n\- /,'<input type="checkbox" checked>','']
+//			'+':[/\n\+ /,'<input type="checkbox">',''],
+//			'-':[/\n\- /,'<input type="checkbox" checked>',''],
+			'+':[/\n\+ /,'&#9744;&nbsp;',''],
+			'-':[/\n\- /,'&#x2611;&nbsp;',''],
+			'?':[/\n\? /,'&#0;&nbsp;',''],
+			'!':[/\n\! /,'&#128161;&nbsp;',''],
 		}[f];
 		h+=
-			R?R[1]+('\n'+b)
+			(R && b[1]==" ")?R[1]+('\n'+b)
 				.split(R[0])
 				.slice(1)
 				.map(R[3]?escape:inlineEscape)
