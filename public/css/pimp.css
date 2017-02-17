@@ -64,6 +64,7 @@ table.item {
 }
 
 .left-icon-block {
+	text-align:center;
 	vertical-align:top;
 	max-width:15px;
 	min-width:15px;
@@ -74,10 +75,18 @@ table.item {
 	color:white;
 }
 
+.left-icon-block a:visited {
+	color:#66b0ff;
+}
+
 .left-icon {
 	position:relative;
 	top:-3px;
 	max-width:15px;
+}
+
+.checkbox {
+	right:4px !important;
 }
 
 .right-icon-block {
@@ -120,6 +129,10 @@ table.item {
 	font-family:sans-serif;
 	font-size:12pt;
 }
+.right-text-block a:visited {
+	color:#003e80;
+}
+
 
 .title-button {
 	float:right;
@@ -174,10 +187,6 @@ table.item {
 }
 
 .note {
-}
-
-a:visited {
-	color:#66b0ff;
 }
 
 a:link {

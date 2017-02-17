@@ -9,9 +9,9 @@ var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
 var localItem;
-var DIAMOND = "&#9670;"; // BLACK DIAMOND
-var DASH = "&#8212;"; // EM DASH
-var RIGHTPOINTER = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
+var DIAMOND = "&#8212;"; // "&#9670;"; // BLACK DIAMOND
+var DASH = "&#183;";// "&#8212;"; // EM DASH
+var LINK = "&#128279;"// "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
 
 function addNewRow( i, leftText, rightText )
 {
@@ -38,7 +38,7 @@ function addNewRow( i, leftText, rightText )
 		{
 			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
 			if( rightText == "" )
-				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+				$newLeftIcon.html("<span class='left-icon'>"+DASH+"</span>");
 			else
 			{
 				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
@@ -47,7 +47,7 @@ function addNewRow( i, leftText, rightText )
 		else
 		{
 			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
-			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
+			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		$newRightIcon.html("&nbsp;");
@@ -61,6 +61,7 @@ function addNewRow( i, leftText, rightText )
 		// $(".left-text-block").blur(render);
 		$(".right-text-block").focus(edit);
 		$(".right-text-block").blur(render);
+		$(".right-text-block").blur();
 	}
 }
 
@@ -85,19 +86,39 @@ function render( evt )
 		{
 			link = extractHref(html);
 			console.log("	link = '"+link+"'");
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 		}
 		else if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
 		{
 			link = html;
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+RIGHTPOINTER+"</a></span>");
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+		}
+		else if( html.startsWith("&#0;&nbsp;") )
+		{
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#0;</span>");
+			html = html.substring(10);
+		}
+		else if( html.startsWith("&#9744;&nbsp;") )
+		{
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\"></span>");
+			html = html.substring(13);
+		}
+		else if( html.startsWith("&#x2611;&nbsp;") )
+		{
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" checked></span>");
+			html = html.substring(14);
+		}
+		else if( html.startsWith("&#128161;&nbsp;") )
+		{
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128161;&nbsp;</span>");
+			html = html.substring(15);
 		}
 		else
 		{
 			if( html == "" )
-				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DASH+"</span>");
 			else
 				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
 		}
@@ -196,10 +217,11 @@ function setSelectionRange(aNode, aOffset)
 {
 	aNode.focus();
 	var sel = window.getSelection(),
-	range	= sel.getRangeAt(0);
+	range = sel.getRangeAt(0);
 	range.collapse(true);
-	range.setStart(aNode.childNodes[0], aOffset),
-	// range.setEnd(aNode.childNodes[0], aOffset+1),				
+	if( aNode.childNodes.length > 0 )
+		range.setStart(aNode.childNodes[0], aOffset),
+	// range.setEnd(aNode.childNodes[0], aOffset+1),
 	sel.removeAllRanges();
 	sel.addRange(range);
 }
@@ -380,7 +402,7 @@ function start()
 				var $newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx});
 				var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
 				$newRightIcon.html("&nbsp;");
-				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+				$newLeftIcon.html("<span class='left-icon'>"+DASH+"</span>");
 				$newRow.append($newLeft);
 				$newRow.append($newLeftIcon);
 				$newRow.append($newRight);
@@ -409,7 +431,7 @@ function start()
 		}
 		else if( $(document.activeElement).hasClass("right-text-block") && e.which == 8 && $(document.activeElement).text().length == 1 )
 		{
-			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon'>"+DASH+"</span>");
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
@@ -422,8 +444,8 @@ function start()
 						e.preventDefault();
 						var rowToRemove = $(document.activeElement).parent("tr");
 						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
-						var l = prevTextBlock.text().length;
-						prevTextBlock.text(prevTextBlock.text()+$(document.activeElement).text());
+						var l = prevTextBlock.attr("source").length;
+						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).attr("source"));
 						setSelectionRange(prevTextBlock[0], l);
 						prevTextBlock.focus();
 						rowToRemove.remove();
