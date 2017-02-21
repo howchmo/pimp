@@ -47,6 +47,7 @@ a {
 
 table.item {
 	border-collapse:collapse;
+	vertical-align:top;
 }
 
 .left-column {
