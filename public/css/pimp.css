@@ -170,7 +170,7 @@ table.item {
 }
 
 .internal-table td {
-	border: 1px solid white;
+	border: 1px solid #003e80;
 	vertical-align:top;
 }
 
@@ -179,6 +179,7 @@ table.item {
 }
 
 .internal-table thead tr td {
+	padding-top:5px;
 	color:white;
 	text-align:center;
 	background:black !important;
@@ -187,6 +188,16 @@ table.item {
 }
 
 .note {
+}
+
+tr:hover {
+	border-top:1px #003e80 solid;
+	border-bottom:1px #003e80 solid;
+}
+
+tr:focus {
+	border-top:1px #003e80 solid;
+	border-bottom:1px #003e80 solid;
 }
 
 a:link {
