@@ -319,14 +319,16 @@ function start()
 			createLinkedItem( "TEST TEXT", $(this) );
 		});
 */
-		if( itemId != "" )
+		if( itemId == "" )
 		{
-			ajaxLoad("pimp/"+itemId, ajaxOnResult);
+			itemId = "000000000000000000000000";
 		}
-		else
-		{
-			addNewRow("","");
-		}
+		ajaxLoad("pimp/"+itemId, ajaxOnResult);
+//		}
+//		else
+//		{
+//			addNewRow("","");
+//		}
 	});
 
 
