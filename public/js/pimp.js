@@ -12,6 +12,7 @@ var localItem;
 var DIAMOND = "&#8212;"; // "&#9670;"; // BLACK DIAMOND
 var DASH = "&#183;";// "&#8212;"; // EM DASH
 var LINK = "&#128279;"// "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
+var CLOCK = "&#128338;";
 
 function addNewRow( i, leftText, rightText )
 {
@@ -114,6 +115,15 @@ function render( evt )
 		{
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128161;&nbsp;</span>");
 			html = html.substring(15);
+		}
+		else if( html.startsWith("&#128338;&nbsp;") )
+		{
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128338;&nbsp;</span>");
+			html = html.substring(15);
+		}
+		else if( html.startsWith("---") )
+		{
+			html = "<hr>";
 		}
 		else
 		{
