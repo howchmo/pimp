@@ -9,13 +9,14 @@ var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
 var localItem;
-var DIAMOND = "&#8212;"; // "&#9670;"; // BLACK DIAMOND
-var DASH = "&#183;";// "&#8212;"; // EM DASH
+var DASH = "&#8212;"; // "&#9670;"; // BLACK DASH
+var DOT = "&#183;";// "&#8212;"; // EM DOT
 var LINK = "&#128279;"// "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
 var CLOCK = "&#128338;";
 
-function addNewRow( i, leftText, rightText )
+function addNewRow( i, leftText, rightText, datetime )
 {
+	console.log("addNewRow( "+i+", '"+leftText+"', '"+rightText+"', "+datetime+")");
 	if( leftText != undefined && rightText != undefined )
 	{
 		var link = null;
@@ -39,11 +40,9 @@ function addNewRow( i, leftText, rightText )
 		{
 			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
 			if( rightText == "" )
-				$newLeftIcon.html("<span class='left-icon'>"+DASH+"</span>");
+				$newLeftIcon.html("<span class='left-icon'>"+DOT+"</span>");
 			else
-			{
-				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
-			}
+				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
 		}
 		else
 		{
@@ -51,7 +50,13 @@ function addNewRow( i, leftText, rightText )
 			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
-		$newRightIcon.html("&nbsp;");
+		if( datetime == null )
+			$newRightIcon.html("&nbsp;");
+		else
+		{
+			$newRightIcon.attr("born",datetime);
+			$newRightIcon.html(generateDateTimeBlock(new Date(datetime)));
+		}
 		$newRow.append($newLeft);
 		$newRow.append($newLeftIcon);
 		$newRow.append($newRight);
@@ -79,14 +84,11 @@ function render( evt )
 	{
 		var blockIdx = t.attr("block");
 		var source = t.text();
-		console.log("render() "+blockIdx+" "+source);
 		t.attr("source", source);
 		var html = toHtml(source);
-		console.log("	"+html);
 		if( html.startsWith("<a href=\"") )
 		{
 			link = extractHref(html);
-			console.log("	link = '"+link+"'");
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 		}
@@ -128,9 +130,9 @@ function render( evt )
 		else
 		{
 			if( html == "" )
-				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DASH+"</span>");
+				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DOT+"</span>");
 			else
-				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
 		}
 		t.html(html);
 	}, 1);
@@ -144,7 +146,6 @@ function edit( evt )
 	{
 		var itemIdx = t.attr("block");
 		var source = t.attr("source");
-		console.log("edit() "+itemIdx+" "+source);
 		t.text(source);
 	}, 1);
 }
@@ -155,24 +156,30 @@ function populate(item)
 	document.title = "PIMP: "+item.title;
 
 	localItem = item;
-	console.log("item.title = '"+item.title+"'");
 	if( item.title == " " )
 		$(".item-title").html("...");
 	else
 		$(".item-title").html(item.title);
+	$("#item-born").html(item.born);
 	for( var i = 0; i < item.doc.length; i++ )
 	{
 		for( var key in item.doc[i] )
 		{
+			var born = null;
 			var val = item.doc[i][key];
 			if( $.isPlainObject(val) )
 			{
-				//addNewRow( i, key, val.text, val.url);
-				var title = val.text;
-				var url = val.url;
-				val = "["+title+"]("+val.url+")";
+				var text = val.text;
+				if( val.url != undefined )
+				{
+					var url = val.url;
+					val = "["+title+"]("+val.url+")";
+				}
+				else
+					born = val.born
+				val = text;
 			}
-			addNewRow( i, key, val);
+			addNewRow( i, key, val, born);
 		}
 	}
 }
@@ -286,15 +293,34 @@ function jsonifyItem()
 			first_time_thru = false;
 			jitem["title"] = value;
 		}
-		if( $rightTextBlock.attr("link") != null )
-		{
-			value = {"text": value, "url": $rightTextBlock.attr("link")}
-		}
+		var $rightIconBlock = $(this).find(".right-icon-block");
+		console.log("rightIconBlock = "+$rightIconBlock.html());
+		var itemBorn = $rightIconBlock.attr("born");
+		console.log("jsonify "+itemBorn);
+		//if( $rightTextBlock.attr("link") != null )
+		//{
+			value = {"text": value, "born": itemBorn};
+		//}
 		var obj = {};
 		obj[key] = value;
 		jitem["doc"].push(obj);
 	});
 	return jitem;
+}
+
+function padZero( number )
+{
+	if( number < 10 )
+		return "0"+number.toString();
+	return number;
+}
+
+function generateDateTimeBlock( datetime )
+{
+	var datestr = padZero(datetime.getFullYear())+"/"+padZero(datetime.getMonth())+"/"+padZero(datetime.getDate());
+	var timestr = padZero(datetime.getHours())+":"+padZero(datetime.getMinutes())+":"+padZero(datetime.getSeconds());
+	str = "<span class='date-string'>"+datestr+"</span><br><span class='time-string'>"+timestr+"</span>";
+	return(str);
 }
 
 function start()
@@ -324,21 +350,11 @@ function start()
 		$(".close-button").click(function() {
 			saveItem();
 		});
-/*
-		$(".right-icon").click(function() {
-			createLinkedItem( "TEST TEXT", $(this) );
-		});
-*/
 		if( itemId == "" )
 		{
 			itemId = "000000000000000000000000";
 		}
 		ajaxLoad("pimp/"+itemId, ajaxOnResult);
-//		}
-//		else
-//		{
-//			addNewRow("","");
-//		}
 	});
 
 
@@ -413,8 +429,8 @@ function start()
 				var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
 				var $newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx});
 				var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
-				$newRightIcon.html("&nbsp;");
-				$newLeftIcon.html("<span class='left-icon'>"+DASH+"</span>");
+				$newRightIcon.html("");
+				$newLeftIcon.html("<span class='left-icon'>"+DOT+"</span>");
 				$newRow.append($newLeft);
 				$newRow.append($newLeftIcon);
 				$newRow.append($newRight);
@@ -443,7 +459,7 @@ function start()
 		}
 		else if( $(document.activeElement).hasClass("right-text-block") && e.which == 8 && $(document.activeElement).text().length == 1 )
 		{
-			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon'>"+DASH+"</span>");
+			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon'>"+DOT+"</span>");
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
@@ -505,7 +521,10 @@ function start()
 			{
 				if( end == 0 )
 				{
-					$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DIAMOND+"</span>");
+					var now = new Date();
+					$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").attr("born",now.toISOString());
+					$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").html(generateDateTimeBlock(now));
+					$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
 				}
 			}
 		}

@@ -46,7 +46,10 @@ a {
 }
 
 table.item {
-	border-collapse:collapse;
+	border-collapse: collapse ;
+	border-spacing:5px;
+	padding-left:5px;
+	padding-right:5px;
 	vertical-align:top;
 }
 
@@ -74,6 +77,7 @@ table.item {
 	font-size:12pt;
 	padding-bottom:5px;
 	color:white;
+	cursor:pointer;
 }
 
 .left-icon-block a:visited {
@@ -92,18 +96,29 @@ table.item {
 
 .right-icon-block {
 	vertical-align:top;
-	max-width:8px;
-	min-width:8px;
+	max-width:40px;
+	min-width:40px;
 	font-family:sans-serif;
 	font-weight:bold;
-	font-size:12pt;
-	padding-bottom:5px;
+	font-size:5pt;
+	padding-left:5px;
+	padding-right:5px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	text-align:center;
+	background:#F5F5F5;
+}
+
+.date-string {
+	font-size:4pt;
+}
+
+.time-string {
+	font-size:6pt;
 }
 
 .left-text-block {
@@ -125,7 +140,7 @@ table.item {
 	width:85%;
 	min-height:26px;
 	text-align:left;
-	padding-left:7px;
+	padding-left:14px;
 	padding-bottom:5px;
 	font-family:sans-serif;
 	font-size:12pt;
@@ -155,6 +170,16 @@ table.item {
 	transform-origin:100% 0%;
 	transform: scale(0.7);
 	cursor:pointer;
+}
+
+#item-born {
+	position:absolute;
+	top:16px;
+	right:5px;
+	cursor:none;
+	font-size:8pt;
+	font-style:italic;
+	color:grey;
 }
 
 .item-title {
@@ -204,5 +229,7 @@ tr:focus {
 a:link {
 	color:#e6ccff;
 }
+
+
 
 
