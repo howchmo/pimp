@@ -11,7 +11,7 @@ var itemId;
 var localItem;
 var DASH = "&#8212;"; // "&#9670;"; // BLACK DASH
 var DOT = "&#183;";// "&#8212;"; // EM DOT
-var LINK = "&#128279;"// "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE
+var LINK = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE // "&#128279;" // CHAIN LINK ICON
 var CLOCK = "&#128338;";
 
 function addNewRow( i, leftText, rightText, datetime )
