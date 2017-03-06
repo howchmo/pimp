@@ -190,6 +190,7 @@ table.item {
 }
 
 .internal-table {
+	table-layout: fixed;
 	width:100%;
 	border-collapse:collapse;
 	vertical-align:top;

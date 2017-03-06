@@ -11,6 +11,7 @@
 		return escape(s)
 			.replace(/!\[([^\]]*)]\(([^(]+)\)/g, '<img alt="$1" src="$2">')
 			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '$1'.link('$2'))
+			.replace(/ \| /g, '</td><td>')
 			.replace(/`([^`]+)`/g, '<code>$1</code>')
 			.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
 			.replace(/\*([^*]+)\*/g, '<em>$1</em>');
@@ -36,6 +37,8 @@
 			'?':[/\n\? /,'&#0;&nbsp;',''],
 			'!':[/\n\! /,'&#128161;&nbsp;',''],
 			'%':[/\n\% /,'&#128338;&nbsp;',''],
+			'|':[/\n\| /,'<table class="internal-table"><tr><td>','</tr></table>'],
+			':':[/\n\: /,'<table class="internal-table"><thead><tr><td>','</tr></thead></table>']
 		}[f];
 		h+=
 			(R && b[1]==" ")?R[1]+('\n'+b)
