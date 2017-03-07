@@ -237,8 +237,10 @@ function setSelectionRange(aNode, aOffset)
 	range = sel.getRangeAt(0);
 	range.collapse(true);
 	if( aNode.childNodes.length > 0 )
-		range.setStart(aNode.childNodes[0], aOffset),
-	// range.setEnd(aNode.childNodes[0], aOffset+1),
+	{
+		range.setStart(aNode.childNodes[0], aOffset);
+		range.setEnd(aNode.childNodes[0], aOffset);
+	}
 	sel.removeAllRanges();
 	sel.addRange(range);
 }
@@ -473,10 +475,10 @@ function start()
 						var rowToRemove = $(document.activeElement).parent("tr");
 						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
 						var l = prevTextBlock.attr("source").length;
-						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).attr("source"));
-						setSelectionRange(prevTextBlock[0], l);
-						prevTextBlock.focus();
+						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
 						rowToRemove.remove();
+						setSelectionRange(prevTextBlock[0], l);
+						//prevTextBlock[0].setSelectionRange(15,15);
 						e.returnValue = false;
 					}
 				}
