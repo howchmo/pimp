@@ -8,13 +8,15 @@
 	}
 	function inlineEscape(s)
 	{
-		return escape(s)
+		var returnStr = escape(s)
 			.replace(/!\[([^\]]*)]\(([^(]+)\)/g, '<img alt="$1" src="$2">')
 			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '$1'.link('$2'))
+			.replace(/<a /g, '<a class="link" ')
 			.replace(/ \| /g, '</td><td>')
 			.replace(/`([^`]+)`/g, '<code>$1</code>')
 			.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
 			.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+		return returnStr;
 	}
 
 	src

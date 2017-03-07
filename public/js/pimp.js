@@ -86,7 +86,7 @@ function render( evt )
 		var source = t.text();
 		t.attr("source", source);
 		var html = toHtml(source);
-		if( html.startsWith("<a href=\"") )
+		if( html.startsWith("<a class=\"link\" href=\"") )
 		{
 			link = extractHref(html);
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
@@ -548,6 +548,12 @@ function ajaxOnResult(evt) {
 		var item = JSON.parse(evt.currentTarget.responseText);
 		console.log(JSON.stringify(item));
 		populate(item);
+		$("a.link").click( function()
+			{
+				alert("this");
+				window.open($(this).attr("href"));
+			}
+		);
 	}
 	else
 	{

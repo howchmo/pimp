@@ -231,6 +231,8 @@ a:link {
 	color:#e6ccff;
 }
 
-
+a.link:hover {
+	color:red;
+}
 
 
