@@ -68,6 +68,12 @@ function addNewRow( i, leftText, rightText, datetime )
 		$(".right-text-block").focus(edit);
 		$(".right-text-block").blur(render);
 		$(".right-text-block").blur();
+		$(".link").click( function()
+			{
+				alert("this");
+				window.open($(this).attr("href"));
+			}
+		);
 	}
 }
 
@@ -86,7 +92,7 @@ function render( evt )
 		var source = t.text();
 		t.attr("source", source);
 		var html = toHtml(source);
-		if( html.startsWith("<a class=\"link\" href=\"") )
+		if( html.startsWith("<span href=\"") )
 		{
 			link = extractHref(html);
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
@@ -331,12 +337,6 @@ function start()
 
 		itemId = window.location.hash.substr(1);
 
-		$(".editable").click(function(){
-			$(this).attr("contenteditable","true");
-			$(this).focus();
-		}).blur(function(){
-		});
-
 		$(".clone-button").click(function() {
 			/*
 			console.log("clone");
@@ -548,12 +548,6 @@ function ajaxOnResult(evt) {
 		var item = JSON.parse(evt.currentTarget.responseText);
 		console.log(JSON.stringify(item));
 		populate(item);
-		$("a.link").click( function()
-			{
-				alert("this");
-				window.open($(this).attr("href"));
-			}
-		);
 	}
 	else
 	{
