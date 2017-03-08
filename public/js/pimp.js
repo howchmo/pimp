@@ -159,6 +159,10 @@ function edit( evt )
 		var itemIdx = t.attr("block");
 		var source = t.attr("source");
 		t.text(source);
+		if( $(".right-icon-block[block="+blockIdx+"]").html() == "" )
+		{
+			$(".right-icon-block[block="+blockIdx+"]").html(generateDateTimeBlock(new Date()));
+		}
 	}, 1);
 }
 
