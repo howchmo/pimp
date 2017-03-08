@@ -68,12 +68,6 @@ function addNewRow( i, leftText, rightText, datetime )
 		$(".right-text-block").focus(edit);
 		$(".right-text-block").blur(render);
 		$(".right-text-block").blur();
-		$(".link").click( function()
-			{
-				alert("this");
-				window.open($(this).attr("href"));
-			}
-		);
 	}
 }
 
@@ -142,6 +136,12 @@ function render( evt )
 		}
 		t.html(html);
 	}, 1);
+		$(".link").click( function()
+			{
+				alert("this");
+				window.open($(this).attr("href"));
+			}
+		);
 }
 
 function edit( evt )
