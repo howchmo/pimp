@@ -74,6 +74,7 @@ function addNewRow( i, leftText, rightText, datetime )
 				window.open($(this).attr("href"));
 			}
 		);
+		$newRight.focus();
 	}
 }
 
