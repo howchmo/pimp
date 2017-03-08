@@ -231,6 +231,12 @@ a:link {
 	color:#e6ccff;
 }
 
+.link {
+	color:#e6ccff;
+}
 
+.link:hover {
+	color:red;
+}
 
 

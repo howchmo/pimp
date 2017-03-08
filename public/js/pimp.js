@@ -68,6 +68,12 @@ function addNewRow( i, leftText, rightText, datetime )
 		$(".right-text-block").focus(edit);
 		$(".right-text-block").blur(render);
 		$newRight.html(renderHtml(rightText, blockIdx));
+		$(".link").click( function()
+			{
+				alert("this");
+				window.open($(this).attr("href"));
+			}
+		);
 	}
 }
 
@@ -79,7 +85,7 @@ function extractHref( str )
 function renderHtml( source, blockIdx )
 {
 	var html = toHtml(source);
-	if( html.startsWith("<a href=\"") )
+	if( html.startsWith("<span href=\"") )
 	{
 		link = extractHref(html);
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
@@ -242,8 +248,11 @@ function setSelectionRange(aNode, aOffset)
 	range = sel.getRangeAt(0);
 	range.collapse(true);
 	if( aNode.childNodes.length > 0 )
-		range.setStart(aNode.childNodes[0], aOffset),
-	// range.setEnd(aNode.childNodes[0], aOffset+1),
+
+	{
+		range.setStart(aNode.childNodes[0], aOffset);
+//		range.setEnd(aNode.childNodes[0], aOffset);
+	}
 	sel.removeAllRanges();
 	sel.addRange(range);
 }
@@ -333,13 +342,6 @@ function start()
 	$(function() { //DOM Ready
 
 		itemId = window.location.hash.substr(1);
-
-		$(".editable").click(function(){
-			$(this).attr("contenteditable","true");
-			$(this).focus();
-		}).blur(function(){
-		});
-
 		$(".clone-button").click(function() {
 			/*
 			console.log("clone");
@@ -478,10 +480,11 @@ function start()
 						var rowToRemove = $(document.activeElement).parent("tr");
 						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
 						var l = prevTextBlock.attr("source").length;
-						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).attr("source"));
-						setSelectionRange(prevTextBlock[0], l);
-						prevTextBlock.focus();
+
+						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
 						rowToRemove.remove();
+						setSelectionRange(prevTextBlock[0], l);
+						//prevTextBlock[0].setSelectionRange(15,15);
 						e.returnValue = false;
 					}
 				}
