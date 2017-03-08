@@ -67,13 +67,78 @@ function addNewRow( i, leftText, rightText, datetime )
 		// $(".left-text-block").blur(render);
 		$(".right-text-block").focus(edit);
 		$(".right-text-block").blur(render);
+<<<<<<< HEAD
 		$(".right-text-block").blur();
+=======
+		$newRight.html(renderHtml(rightText, blockIdx));
+		$(".link").click( function()
+			{
+				alert("this");
+				window.open($(this).attr("href"));
+			}
+		);
+		$newRight.focus();
+>>>>>>> a35da76d9542384c9b149cd9c744c4e4880abaa7
 	}
 }
 
 function extractHref( str )
 {
 	return(str.split("\"")[1]);
+}
+
+function renderHtml( source, blockIdx )
+{
+	var html = toHtml(source);
+	if( html.startsWith("<span href=\"") )
+	{
+		link = extractHref(html);
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+	}
+	else if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
+	{
+		link = html;
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+	}
+	else if( html.startsWith("&#0;&nbsp;") )
+	{
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#0;</span>");
+		html = html.substring(10);
+	}
+	else if( html.startsWith("&#9744;&nbsp;") )
+	{
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\"></span>");
+		html = html.substring(13);
+	}
+	else if( html.startsWith("&#x2611;&nbsp;") )
+	{
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" checked></span>");
+		html = html.substring(14);
+	}
+	else if( html.startsWith("&#128161;&nbsp;") )
+	{
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128161;&nbsp;</span>");
+		html = html.substring(15);
+	}
+	else if( html.startsWith("&#128338;&nbsp;") )
+	{
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128338;&nbsp;</span>");
+		html = html.substring(15);
+	}
+	else if( html.startsWith("---") )
+	{
+		html = "<hr>";
+	}
+	else
+	{
+		if( html == "" )
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DOT+"</span>");
+		else
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+	}
+	return html;
 }
 
 function render( evt )
@@ -84,57 +149,8 @@ function render( evt )
 	{
 		var blockIdx = t.attr("block");
 		var source = t.text();
+		t.html(renderHtml(source, blockIdx));
 		t.attr("source", source);
-		var html = toHtml(source);
-		if( html.startsWith("<span href=\"") )
-		{
-			link = extractHref(html);
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
-		}
-		else if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
-		{
-			link = html;
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-			$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
-		}
-		else if( html.startsWith("&#0;&nbsp;") )
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#0;</span>");
-			html = html.substring(10);
-		}
-		else if( html.startsWith("&#9744;&nbsp;") )
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\"></span>");
-			html = html.substring(13);
-		}
-		else if( html.startsWith("&#x2611;&nbsp;") )
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" checked></span>");
-			html = html.substring(14);
-		}
-		else if( html.startsWith("&#128161;&nbsp;") )
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128161;&nbsp;</span>");
-			html = html.substring(15);
-		}
-		else if( html.startsWith("&#128338;&nbsp;") )
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128338;&nbsp;</span>");
-			html = html.substring(15);
-		}
-		else if( html.startsWith("---") )
-		{
-			html = "<hr>";
-		}
-		else
-		{
-			if( html == "" )
-				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DOT+"</span>");
-			else
-				$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
-		}
-		t.html(html);
 	}, 1);
 		$(".link").click( function()
 			{
@@ -243,9 +259,10 @@ function setSelectionRange(aNode, aOffset)
 	range = sel.getRangeAt(0);
 	range.collapse(true);
 	if( aNode.childNodes.length > 0 )
+
 	{
 		range.setStart(aNode.childNodes[0], aOffset);
-		range.setEnd(aNode.childNodes[0], aOffset);
+//		range.setEnd(aNode.childNodes[0], aOffset);
 	}
 	sel.removeAllRanges();
 	sel.addRange(range);
@@ -336,7 +353,6 @@ function start()
 	$(function() { //DOM Ready
 
 		itemId = window.location.hash.substr(1);
-
 		$(".clone-button").click(function() {
 			/*
 			console.log("clone");
@@ -475,6 +491,7 @@ function start()
 						var rowToRemove = $(document.activeElement).parent("tr");
 						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
 						var l = prevTextBlock.attr("source").length;
+
 						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
 						rowToRemove.remove();
 						setSelectionRange(prevTextBlock[0], l);
