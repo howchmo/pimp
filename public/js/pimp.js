@@ -49,7 +49,7 @@ function addNewRow( i, leftText, rightText, datetime )
 			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
 			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
-		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':renderHtml(rightText,blockIdx)});
+		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		if( datetime == null )
 			$newRightIcon.html("&nbsp;");
 		else
@@ -64,6 +64,7 @@ function addNewRow( i, leftText, rightText, datetime )
 		$("table.item tbody").append($newRow);
 		$newRight.focus(edit);
 		$newRight.blur(render);
+		$newRight.html(renderHtml(rightText, blockIdx));
 	}
 }
 
