@@ -161,6 +161,10 @@ function edit( evt )
 		var source = t.attr("source");
 		console.log("edit source = "+source);
 		t.text(source);
+		if( $(".right-icon-block[block="+blockIdx+"]").html() == "" )
+		{
+			$(".right-icon-block[block="+blockIdx+"]").html(generateDateTimeBlock(new Date()));
+		}
 	}, 1);
 }
 
