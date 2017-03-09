@@ -159,12 +159,7 @@ function edit( evt )
 	{
 		var itemIdx = t.attr("block");
 		var source = t.attr("source");
-		console.log("edit source = "+source);
 		t.text(source);
-		if( $(".right-icon-block[block="+blockIdx+"]").html() == "" )
-		{
-			$(".right-icon-block[block="+blockIdx+"]").html(generateDateTimeBlock(new Date()));
-		}
 	}, 1);
 }
 
@@ -317,9 +312,7 @@ function jsonifyItem()
 			jitem["title"] = value;
 		}
 		var $rightIconBlock = $(this).find(".right-icon-block");
-		console.log("rightIconBlock = "+$rightIconBlock.html());
 		var itemBorn = $rightIconBlock.attr("born");
-		console.log("jsonify "+itemBorn);
 		//if( $rightTextBlock.attr("link") != null )
 		//{
 			value = {"text": value, "born": itemBorn};
@@ -432,10 +425,8 @@ function start()
 		{
 			if( !e.shiftKey )
 			{
-				var newStr = "";
-				var oldStr = "";
-				oldStr = text.substring(0,pos);
-				newStr = text.substring(pos,end);
+				var oldStr = text.substring(0,pos);
+				var newStr = text.substring(pos,end);
 				if( pos < end )
 					e.preventDefault();
 				var activeBlockIdx = $(document.activeElement).attr("block");
@@ -461,14 +452,27 @@ function start()
 				}
 				else if( document.activeElement.className == 'right-text-block' )
 				{
-					console.log("oldStr = "+oldStr+", newStr = "+newStr);
+					if( oldStr == "" )
+					{
+						var $rightIconBlock = $(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']");
+						$rightIconBlock.html("");
+						$rightIconBlock.removeAttr("born");
+						$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("");
+					}
 					$(".right-text-block[block='"+activeBlockIdx+"']").attr("source", oldStr);
 					$newRight.attr("source", newStr);
 					$(".right-text-block[block='"+activeBlockIdx+"']").text(oldStr);
 					$newRight.text(newStr);
+					if( newStr != "" )
+					{
+						var now = new Date();
+						$newRightIcon.attr("born",now.toISOString());
+						$newRightIcon.html(generateDateTimeBlock(now));
+					}
 					$newRight.focus(edit);
 					$newRight.blur(render);
 				}
+				$newRight.focus();
 			}
 			saveItem();
 		}
@@ -487,12 +491,13 @@ function start()
 						e.preventDefault();
 						var rowToRemove = $(document.activeElement).parent("tr");
 						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
-						var l = prevTextBlock.attr("source").length;
-
 						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
+						var prevDateTimeBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-icon-block");
+						var dateTimeBlock = $(document.activeElement).parent("tr").find(".right-icon-block");
+						prevDateTimeBlock.html(dateTimeBlock.html());
 						rowToRemove.remove();
+						var l = prevTextBlock.attr("source").length;
 						setSelectionRange(prevTextBlock[0], l);
-						//prevTextBlock[0].setSelectionRange(15,15);
 						e.returnValue = false;
 					}
 				}
