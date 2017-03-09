@@ -49,7 +49,7 @@ function addNewRow( i, leftText, rightText, datetime )
 			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
 			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
-		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
+		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':renderHtml(rightText,blockIdx)});
 		if( datetime == null )
 			$newRightIcon.html("&nbsp;");
 		else
@@ -61,25 +61,16 @@ function addNewRow( i, leftText, rightText, datetime )
 		$newRow.append($newLeftIcon);
 		$newRow.append($newRight);
 		$newRow.append($newRightIcon);
-		//$("tr[block="+abi+"]").after($newRow);
 		$("table.item tbody").append($newRow);
-		// $(".left-text-block").focus(edit);
-		// $(".left-text-block").blur(render);
-		$(".right-text-block").focus(edit);
-		$(".right-text-block").blur(render);
-<<<<<<< HEAD
-		$(".right-text-block").blur();
-=======
-		$newRight.html(renderHtml(rightText, blockIdx));
-		$(".link").click( function()
-			{
-				alert("this");
-				window.open($(this).attr("href"));
-			}
-		);
-		$newRight.focus();
->>>>>>> a35da76d9542384c9b149cd9c744c4e4880abaa7
+		$newRight.focus(edit);
+		$newRight.blur(render);
 	}
+}
+
+function linkClick()
+{
+	alert("this");
+	window.open($(this).attr("href"));
 }
 
 function extractHref( str )
@@ -168,6 +159,7 @@ function edit( evt )
 	{
 		var itemIdx = t.attr("block");
 		var source = t.attr("source");
+		console.log("edit source = "+source);
 		t.text(source);
 	}, 1);
 }
@@ -204,6 +196,8 @@ function populate(item)
 			addNewRow( i, key, val, born);
 		}
 	}
+	// Put the cursor at the end of the note
+	$(".right-text-block[block="+i+"]").focus();
 }
 
 function getCaretCharacterOffsetWithin(element) {
@@ -470,7 +464,6 @@ function start()
 					$newRight.text(newStr);
 					$newRight.focus(edit);
 					$newRight.blur(render);
-					$newRight.focus();
 				}
 			}
 			saveItem();
