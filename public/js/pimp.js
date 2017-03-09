@@ -476,9 +476,10 @@ function start()
 			}
 			saveItem();
 		}
-		else if( $(document.activeElement).hasClass("right-text-block") && e.which == 8 && $(document.activeElement).text().length == 1 )
+		else if( $(document.activeElement).hasClass("right-text-block") && (e.which == 8 || e.which == 0) && $(document.activeElement).text().length == 1 )
 		{
 			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon'>"+DOT+"</span>");
+			$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("");
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
@@ -491,13 +492,18 @@ function start()
 						e.preventDefault();
 						var rowToRemove = $(document.activeElement).parent("tr");
 						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
+						var l = prevTextBlock.attr("source").length;
 						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
+						prevTextBlock.text(prevTextBlock.attr("source"));
 						var prevDateTimeBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-icon-block");
 						var dateTimeBlock = $(document.activeElement).parent("tr").find(".right-icon-block");
-						prevDateTimeBlock.html(dateTimeBlock.html());
-						rowToRemove.remove();
-						var l = prevTextBlock.attr("source").length;
+						if( $(document.activeElement).text() != "" )
+						{
+							prevDateTimeBlock.html(dateTimeBlock.html());
+							prevDateTimeBlock.attr("born", dateTimeBlock.attr("born"));
+						}
 						setSelectionRange(prevTextBlock[0], l);
+						rowToRemove.remove();
 						e.returnValue = false;
 					}
 				}
