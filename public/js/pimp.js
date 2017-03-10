@@ -82,12 +82,18 @@ function extractHref( str )
 	return(str.split("\"")[1]);
 }
 
+function extractText( str )
+{
+	return((str.split(">")[1]).split("<")[0]);
+}
+
 function renderHtml( source, blockIdx )
 {
 	var html = toHtml(source);
 	if( html.startsWith("<span href=\"") )
 	{
-		link = extractHref(html);
+		var link = extractHref(html);
+		html = toHtml(extractText(html));
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 	}
