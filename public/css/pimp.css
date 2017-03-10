@@ -94,7 +94,7 @@ table#item-blocks-table {
 	right:4px !important;
 }
 
-.right-icon-block {
+.date-time-block {
 	vertical-align:top;
 	max-width:40px;
 	min-width:40px;
@@ -238,5 +238,19 @@ a:link {
 .link:hover {
 	color:red;
 }
+
+.link-block {
+	text-align:center;
+	vertical-align:middle;
+	font-family:sans-serif;
+	font-weight:bold;
+	font-size:12pt;
+	padding-bottom:5px;
+}
+
+.link-icon {
+}
+
+
 
 

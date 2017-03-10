@@ -13,6 +13,7 @@ var DASH = "&nbsp;"; // "&#8212;"; // "&#9670;"; // BLACK DASH
 var DOT = "&nbsp;"; // "&#8212;"; // "&#183;"; // EM DOT
 var LINK = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE // "&#128279;" // CHAIN LINK ICON
 var CLOCK = "&#128338;";
+var BLOCK = "&#9608;"; // FULL BLOCK
 
 function addNewRow( i, leftText, rightText, datetime )
 {
@@ -23,9 +24,9 @@ function addNewRow( i, leftText, rightText, datetime )
 		blockIdx++;
 		var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
 		var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx, 'html':leftText});
-		var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
-		var $newLeft;
-		var $newRightIcon;
+		var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
+		var $newDateTime = $('<td/>', {'class':'date-time-block', 'block':blockIdx});
+		var $newLinkBlock;
 		rightText = rightText.replace("<br>", "");
 		if( rightText.startsWith("http://") || rightText.startsWith("https://") || rightText.startsWith("file:////") )
 		{
@@ -38,31 +39,32 @@ function addNewRow( i, leftText, rightText, datetime )
 		}
 		if( link == null )
 		{
-			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
+			$newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx});
 			if( rightText == "" )
-				$newLeftIcon.html("<span class='left-icon'>"+DOT+"</span>");
+				$newLinkBlock.html("<span class='link-icon'>&nbsp;</span>");
 			else
-				$newLeftIcon.html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+				$newLinkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
 		}
 		else
 		{
-			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
-			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+			$newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx, 'link':link});
+			$newLinkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
 		//$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		if( datetime == null )
-			$newRightIcon.html("&nbsp;");
+			$newDateTime.html("&nbsp;");
 		else
 		{
-			$newRightIcon.attr("born",datetime);
-			$newRightIcon.html(generateDateTimeBlock(new Date(datetime)));
+			$newDateTime.attr("born",datetime);
+			$newDateTime.html(generateDateTimeBlock(new Date(datetime)));
 		}
 		$newRow.append($newLeft);
 		$newRow.append($newLeftIcon);
 		$newRow.append($newRight);
-		$newRow.append($newRightIcon);
-		$("#item-blocks-table").append($newRow);
+		$newRow.append($newDateTime);
+		$newRow.append($newLinkBlock);
+		$("#item-blocks-table-body").append($newRow);
 		$newRight.focus(edit);
 		$newRight.blur(render);
 		$newRight.html(renderHtml(rightText, blockIdx));
@@ -315,7 +317,7 @@ function jsonifyItem()
 			first_time_thru = false;
 			jitem["title"] = value;
 		}
-		var $rightIconBlock = $(this).find(".right-icon-block");
+		var $rightIconBlock = $(this).find(".date-time-block");
 		var itemBorn = $rightIconBlock.attr("born");
 		//if( $rightTextBlock.attr("link") != null )
 		//{
@@ -439,13 +441,15 @@ function start()
 				var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx});
 				var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
 				var $newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx});
-				var $newRightIcon = $('<td/>', {'class':'right-icon-block', 'block':blockIdx});
-				$newRightIcon.html("");
+				var $newDateTimeBlock = $('<td/>', {'class':'date-time-block', 'block':blockIdx});
+				var $newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx});
+				$newDateTimeBlock.html("");
 				$newLeftIcon.html("<span class='left-icon'>"+DOT+"</span>");
 				$newRow.append($newLeft);
 				$newRow.append($newLeftIcon);
 				$newRow.append($newRight);
-				$newRow.append($newRightIcon);
+				$newRow.append($newDateTimeBlock);
+				$newRow.append($newLinkBlock);
 				$("tr[block="+activeBlockIdx+"]").after($newRow);
 				if( document.activeElement.className == 'left-text-block' )
 				{
@@ -458,10 +462,10 @@ function start()
 				{
 					if( oldStr == "" )
 					{
-						var $rightIconBlock = $(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']");
-						$rightIconBlock.html("");
-						$rightIconBlock.removeAttr("born");
-						$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("");
+						var $dateTimeBlock = $(".date-time-block[block='"+$(document.activeElement).attr("block")+"']");
+						$dateTimeBlock.html("");
+						$dateTimeBlock.removeAttr("born");
+						$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").html("");
 					}
 					$(".right-text-block[block='"+activeBlockIdx+"']").attr("source", oldStr);
 					$newRight.attr("source", newStr);
@@ -470,8 +474,8 @@ function start()
 					if( newStr != "" )
 					{
 						var now = new Date();
-						$newRightIcon.attr("born",now.toISOString());
-						$newRightIcon.html(generateDateTimeBlock(now));
+						$newDateTimeBlock.attr("born",now.toISOString());
+						$newDateTimeBlock.html(generateDateTimeBlock(now));
 					}
 					$newRight.focus(edit);
 					$newRight.blur(render);
@@ -483,7 +487,7 @@ function start()
 		else if( $(document.activeElement).hasClass("right-text-block") && (e.which == 8 || e.which == 0) && $(document.activeElement).text().length == 1 )
 		{
 			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon'>"+DOT+"</span>");
-			$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("");
+			$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").html("");
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
@@ -499,8 +503,8 @@ function start()
 						var l = prevTextBlock.attr("source").length;
 						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
 						prevTextBlock.text(prevTextBlock.attr("source"));
-						var prevDateTimeBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-icon-block");
-						var dateTimeBlock = $(document.activeElement).parent("tr").find(".right-icon-block");
+						var prevDateTimeBlock = $(document.activeElement).parent("tr").prev("tr").find(".date-time-block");
+						var dateTimeBlock = $(document.activeElement).parent("tr").find(".date-time-block");
 						if( $(document.activeElement).text() != "" )
 						{
 							prevDateTimeBlock.html(dateTimeBlock.html());
@@ -553,9 +557,9 @@ function start()
 				if( end == 0 )
 				{
 					var now = new Date();
-					$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").attr("born",now.toISOString());
-					$(".right-icon-block[block='"+$(document.activeElement).attr("block")+"']").html(generateDateTimeBlock(now));
-					$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+					$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").attr("born",now.toISOString());
+					$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").html(generateDateTimeBlock(now));
+					$(".link-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
 				}
 			}
 		}
