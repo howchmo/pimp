@@ -49,6 +49,7 @@ function addNewRow( i, leftText, rightText, datetime )
 			$newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx, 'link':link});
 			$newLeftIcon.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
+		//$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		if( datetime == null )
 			$newRightIcon.html("&nbsp;");
@@ -61,7 +62,7 @@ function addNewRow( i, leftText, rightText, datetime )
 		$newRow.append($newLeftIcon);
 		$newRow.append($newRight);
 		$newRow.append($newRightIcon);
-		$("table.item tbody").append($newRow);
+		$("#item-blocks-table").append($newRow);
 		$newRight.focus(edit);
 		$newRight.blur(render);
 		$newRight.html(renderHtml(rightText, blockIdx));
@@ -196,6 +197,8 @@ function populate(item)
 			addNewRow( i, key, val, born);
 		}
 	}
+	if( item.doc.length == 0 )
+		addNewRow(0, "", "", "");
 	// Put the cursor at the end of the note
 	$(".right-text-block[block="+i+"]").focus();
 }
@@ -266,7 +269,7 @@ function pprint()
 {
 	var firsttimethru = true;
 	var str = "{\n";
-	$(".item tbody").children("tr").each(function() {
+	$("#item-blocks-table-body").children("tr").each(function() {
 		var key = $(this).find(".left-text-block").text();
 		key += " ";
 		var value = $(this).find(".right-text-block").html();
@@ -303,7 +306,7 @@ function jsonifyItem()
 	}
 	jitem["born"] = new Date();
 	jitem["doc"] = [];
-	$(".item tbody").children("tr").each(function() {
+	$("#item-blocks-table-body").children("tr").each(function() {
 		var key = $(this).find(".left-text-block").text();
 		var $rightTextBlock = $(this).find(".right-text-block");
 		value = $rightTextBlock.attr("source");

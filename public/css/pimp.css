@@ -45,7 +45,7 @@ a {
 	width:100%;
 }
 
-table.item {
+table#item-blocks-table {
 	border-collapse: collapse ;
 	border-spacing:5px;
 	padding-left:5px;
