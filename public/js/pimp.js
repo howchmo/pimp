@@ -77,12 +77,12 @@ function linkClick()
 	window.open($(this).attr("href"));
 }
 
-function extractHref( str )
+function extractHrefFromLink( str )
 {
 	return(str.split("\"")[1]);
 }
 
-function extractText( str )
+function extractTextFromLink( str )
 {
 	return((str.split(">")[1]).split("<")[0]);
 }
@@ -92,8 +92,8 @@ function renderHtml( source, blockIdx )
 	var html = toHtml(source);
 	if( html.startsWith("<span href=\"") )
 	{
-		var link = extractHref(html);
-		html = toHtml(extractText(html));
+		var link = extractHrefFromLink(html);
+		html = toHtml(extractTextFromLink(html));
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 	}
