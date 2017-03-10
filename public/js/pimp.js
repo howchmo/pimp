@@ -9,8 +9,8 @@ var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
 var localItem;
-var DASH = "&#8212;"; // "&#9670;"; // BLACK DASH
-var DOT = "&#183;";// "&#8212;"; // EM DOT
+var DASH = "&nbsp;"; // "&#8212;"; // "&#9670;"; // BLACK DASH
+var DOT = "&nbsp;"; // "&#8212;"; // "&#183;"; // EM DOT
 var LINK = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE // "&#128279;" // CHAIN LINK ICON
 var CLOCK = "&#128338;";
 
