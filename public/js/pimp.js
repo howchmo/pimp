@@ -87,6 +87,22 @@ function extractText( str )
 	return((str.split(">")[1]).split("<")[0]);
 }
 
+function checkBox( blockIdx )
+{
+	var textBlock = $(".right-text-block[block="+blockIdx+"]");
+	console.log(textBlock);
+	var src = textBlock.attr("source");
+	var index = 0;
+	if( src.startsWith("[") )
+		index = 1;
+	if( src[index] == "-" )
+		src = src.substr(0,index)+"+"+src.substr(index+1);
+	else
+		src = src.substr(0,index)+"-"+src.substr(index+1);
+	textBlock.attr("source", src);
+	textBlock.html(renderHtml(src, blockIdx));
+}
+
 function renderHtml( source, blockIdx )
 {
 	var html = toHtml(source);
@@ -94,38 +110,39 @@ function renderHtml( source, blockIdx )
 	{
 		var link = extractHref(html);
 		html = toHtml(extractText(html));
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+		$linkBlock = $(".link-block[block="+blockIdx+"]");
+		$linkBlock.html("<span class='link-block'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+		$linkBlock.attr("link",link);
 	}
-	else if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
+	if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
 	{
-		link = html;
+		var link = html;
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 	}
 	else if( html.startsWith("&#0;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#0;</span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>&#0;</span>");
 		html = html.substring(10);
 	}
 	else if( html.startsWith("&#9744;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\"></span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox'><input type='checkbox' onclick='checkBox("+blockIdx+"); return false;'></span>");
 		html = html.substring(13);
 	}
 	else if( html.startsWith("&#x2611;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" checked></span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox'><input type='checkbox'  onclick='checkBox("+blockIdx+"); return false;' checked></span>");
 		html = html.substring(14);
 	}
 	else if( html.startsWith("&#128161;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128161;&nbsp;</span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>&#128161;&nbsp;</span>");
 		html = html.substring(15);
 	}
 	else if( html.startsWith("&#128338;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>&#128338;&nbsp;</span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>&#128338;&nbsp;</span>");
 		html = html.substring(15);
 	}
 	else if( html.startsWith("---") )
@@ -137,13 +154,14 @@ function renderHtml( source, blockIdx )
 		if( html == "" )
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DOT+"</span>");
 		else
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon' onclick='createLinkedItem( $(this) );'>"+DASH+"</span>");
+			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DASH+"</span>");
 	}
 	return html;
 }
 
 function render( evt )
 {
+	console.log("render");
 	var t = $(this);
 	clearTimeout(render.timeout);
 	render.timeout = setTimeout(function()
