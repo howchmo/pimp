@@ -9,8 +9,8 @@ var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
 var localItem;
-var DASH = "&nbsp;"; // "&#8212;"; // "&#9670;"; // BLACK DASH
-var DOT = "&nbsp;"; // "&#8212;"; // "&#183;"; // EM DOT
+var DASH = "&#183"; // "&#8212;"; // "&#9670;"; // BLACK DASH
+var DOT = "&nbsp;"; // EM DOT
 var LINK = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE // "&#128279;" // CHAIN LINK ICON
 var CLOCK = "&#128338;";
 var BLOCK = "&#9608;"; // FULL BLOCK
@@ -77,9 +77,14 @@ function linkClick()
 	window.open($(this).attr("href"));
 }
 
-function extractHref( str )
+function extractHrefFromLink( str )
 {
 	return(str.split("\"")[1]);
+}
+
+function extractTextFromLink( str )
+{
+	return((str.split(">")[1]).split("<")[0]);
 }
 
 function renderHtml( source, blockIdx )
@@ -87,7 +92,8 @@ function renderHtml( source, blockIdx )
 	var html = toHtml(source);
 	if( html.startsWith("<span href=\"") )
 	{
-		link = extractHref(html);
+		link = extractHrefFromLink(html);
+		html = toHtml(extractTextFromLink(html));
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 	}
@@ -104,12 +110,12 @@ function renderHtml( source, blockIdx )
 	}
 	else if( html.startsWith("&#9744;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\"></span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" onclick='return false;'></span>");
 		html = html.substring(13);
 	}
 	else if( html.startsWith("&#x2611;&nbsp;") )
 	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" checked></span>");
+		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox' onclick='createLinkedItem( $(this) );'><input type=\"checkbox\" checked onclick='return false'></span>");
 		html = html.substring(14);
 	}
 	else if( html.startsWith("&#128161;&nbsp;") )
