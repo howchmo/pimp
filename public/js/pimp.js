@@ -9,7 +9,7 @@ var blockIdx = 0;
 var first_time_thru = true;
 var itemId;
 var localItem;
-var DASH = "&#183"; // "&#8212;"; // "&#9670;"; // BLACK DASH
+var DASH = "&nbsp;" // "&#183"; // "&#8212;"; // "&#9670;"; // BLACK DASH
 var DOT = "&nbsp;"; // EM DOT
 var LINK = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE // "&#128279;" // CHAIN LINK ICON
 var CLOCK = "&#128338;";
@@ -108,8 +108,6 @@ function renderHtml( source, blockIdx )
 	var html = toHtml(source);
 	if( html.startsWith("<span href=\"") )
 	{
-		link = extractHrefFromLink(html);
-		html = toHtml(extractTextFromLink(html));
 		var link = extractHrefFromLink(html);
 		html = toHtml(extractTextFromLink(html));
 		var $linkBlock = $(".link-block[block="+blockIdx+"]");
