@@ -246,6 +246,13 @@ a:link {
 	font-weight:bold;
 	font-size:12pt;
 	padding-bottom:5px;
+	background:#003e80;
+	color:#DAECFF;
+	cursor:pointer;
+}
+
+.link-block a:visited {
+	color:#66b0ff;
 }
 
 .link-icon {

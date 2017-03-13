@@ -110,15 +110,24 @@ function renderHtml( source, blockIdx )
 	{
 		var link = extractHref(html);
 		html = toHtml(extractText(html));
-		$linkBlock = $(".link-block[block="+blockIdx+"]");
-		$linkBlock.html("<span class='link-block'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+		var $linkBlock = $(".link-block[block="+blockIdx+"]");
+		$linkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$linkBlock.attr("link",link);
+	}
+	else
+	{
+		var $linkBlock = $(".link-block[block="+blockIdx+"]");
+		$linkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
+		$linkBlock.removeAttr("link");
 	}
 	if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
 	{
 		var link = html;
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
+		var $linkBlock = $(".link-block[block="+blockIdx+"]");
+		$linkBlock.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+		$linkBlock.attr("link", link);
 	}
 	else if( html.startsWith("&#0;&nbsp;") )
 	{
@@ -152,9 +161,13 @@ function renderHtml( source, blockIdx )
 	else
 	{
 		if( html == "" )
+		{
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DOT+"</span>");
+		}
 		else
+		{
 			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DASH+"</span>");
+		}
 	}
 	return html;
 }
@@ -171,12 +184,13 @@ function render( evt )
 		t.html(renderHtml(source, blockIdx));
 		t.attr("source", source);
 	}, 1);
+/*
 		$(".link").click( function()
 			{
-				alert("this");
 				window.open($(this).attr("href"));
 			}
 		);
+*/
 }
 
 function edit( evt )
