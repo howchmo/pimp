@@ -17,7 +17,6 @@ var BLOCK = "&#9608;"; // FULL BLOCK
 
 function addNewRow( i, leftText, rightText, datetime )
 {
-	console.log("addNewRow( "+i+", '"+leftText+"', '"+rightText+"', "+datetime+")");
 	if( leftText != undefined && rightText != undefined )
 	{
 		var link = null;
@@ -41,7 +40,7 @@ function addNewRow( i, leftText, rightText, datetime )
 		{
 			$newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx});
 			if( rightText == "" )
-				$newLinkBlock.html("<span class='link-icon'>&nbsp;</span>");
+				$newLinkBlock.html("");
 			else
 				$newLinkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
 		}
@@ -90,7 +89,6 @@ function extractTextFromLink( str )
 function checkBox( blockIdx )
 {
 	var textBlock = $(".right-text-block[block="+blockIdx+"]");
-	console.log(textBlock);
 	var src = textBlock.attr("source");
 	var index = 0;
 	if( src.startsWith("[") )
@@ -110,15 +108,18 @@ function renderHtml( source, blockIdx )
 	{
 		var link = extractHrefFromLink(html);
 		html = toHtml(extractTextFromLink(html));
-		var $linkBlock = $(".link-block[block="+blockIdx+"]");
+		$linkBlock = $(".link-block[block="+blockIdx+"]");
 		$linkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$linkBlock.attr("link",link);
 	}
 	else
 	{
 		var $linkBlock = $(".link-block[block="+blockIdx+"]");
-		$linkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
-		$linkBlock.removeAttr("link");
+		if( $linkBlock.html() != "" )
+		{
+			$linkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
+			$linkBlock.removeAttr("link");
+		}
 	}
 	if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
 	{
@@ -174,7 +175,6 @@ function renderHtml( source, blockIdx )
 
 function render( evt )
 {
-	console.log("render");
 	var t = $(this);
 	clearTimeout(render.timeout);
 	render.timeout = setTimeout(function()
@@ -500,10 +500,11 @@ function start()
 				{
 					if( oldStr == "" )
 					{
-						var $dateTimeBlock = $(".date-time-block[block='"+$(document.activeElement).attr("block")+"']");
+						var blockId = $(document.activeElement).attr("block");
+						var $dateTimeBlock = $(".date-time-block[block='"+blockId+"']");
 						$dateTimeBlock.html("");
 						$dateTimeBlock.removeAttr("born");
-						$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").html("");
+						$(".link-block[block='"+blockId+"']").html("");
 					}
 					$(".right-text-block[block='"+activeBlockIdx+"']").attr("source", oldStr);
 					$newRight.attr("source", newStr);
@@ -524,8 +525,10 @@ function start()
 		}
 		else if( $(document.activeElement).hasClass("right-text-block") && (e.which == 8 || e.which == 0) && $(document.activeElement).text().length == 1 )
 		{
-			$(".left-icon-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='left-icon'>"+DOT+"</span>");
-			$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").html("");
+			var blockId = $(document.activeElement).attr("block");
+			$(".left-icon-block[block='"+blockId+"']").html("<span class='left-icon'>"+DOT+"</span>");
+			$(".date-time-block[block='"+blockId+"']").html("");
+			$(".link-block[block='"+blockId+"']").html("");
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
  		{
