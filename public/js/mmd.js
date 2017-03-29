@@ -40,7 +40,7 @@
 			'!':[/\n\! /,'&#128161;&nbsp;',''],
 			'%':[/\n\% /,'&#128338;&nbsp;',''],
 			'|':[/\n\| /,'<table class="internal-table"><tr><td>','</tr></table>'],
-			':':[/\n\: /,'<table class="internal-table"><thead><tr><td>','</tr></thead></table>']
+			':':[/\n\: /,'<table class="internal-table"><thead><tr><td>','</td></tr></thead></table>']
 		}[f];
 		h+=
 			(R && b[1]==" ")?R[1]+('\n'+b)
