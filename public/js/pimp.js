@@ -1,73 +1,132 @@
 $(document).ready(start());
 
-function toHtml( str )
+var icons = {
+	"+":"<input type='checkbox' checked></input",
+	"-":"<input type='checkbox'></input>",
+	"%":"&#128338;",
+	"!":"&#128161;",
+	"?":"&#0;"
+};
+function getLink( block )
 {
-	return(mmd(str));
+	var str = block.text = block.source;
+	if( str.startsWith("[") )
+	{
+		var n = str.lastIndexOf("](");
+		var link = str.substring(n+2, str.length-1);
+		block.link = "<a href=\""+link+"\">&#9654;</a>";
+		block.text = str.substring(1, n);
+	}
+	else if( str.startsWith("http://") || str.startsWith("https://") )
+	{
+		block.icon = '<a href="'+str+'">&#9654;</a>';
+	}
+	else if( str.length > 0 )
+		block.link="&#9608;";
+	else
+	{
+		block.link="";
+		block.datetime=undefined;
+	}
+	return block;
 }
 
-var blockIdx = 0;
-var first_time_thru = true;
-var itemId;
-var localItem;
-var DASH = "&nbsp;" // "&#183"; // "&#8212;"; // "&#9670;"; // BLACK DASH
-var DOT = "&nbsp;"; // EM DOT
-var LINK = "&#9654;"; // BLACK RIGHT-POINTING TRIANGLE // "&#128279;" // CHAIN LINK ICON
-var CLOCK = "&#128338;";
-var BLOCK = "&#9608;"; // FULL BLOCK
-
-function addNewRow( i, leftText, rightText, datetime )
+function getIcon( block )
 {
-	if( leftText != undefined && rightText != undefined )
+	if( block.text[1] == " " )
 	{
-		var link = null;
-		blockIdx++;
-		var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
-		var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx, 'html':leftText});
-		var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
-		var $newDateTime = $('<td/>', {'class':'date-time-block', 'block':blockIdx});
-		var $newLinkBlock;
-		rightText = rightText.replace("<br>", "");
-		if( rightText.startsWith("http://") || rightText.startsWith("https://") || rightText.startsWith("file:////") )
+		var icon = icons[block.text[0]];
+		if( icon != null )
 		{
-			link = rightText;
+			block.icon = icon;
+			block.text = block.text.substring(2, block.text.length);
 		}
-		else if( rightText.startsWith("[") )
-		{
-			link = rightText.split('(')[1];
-			link = link.substring(0,link.length-1);
-		}
-		if( link == null )
-		{
-			$newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx});
-			if( rightText == "" )
-				$newLinkBlock.html("");
-			else
-				$newLinkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
-		}
-		else
-		{
-			$newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx, 'link':link});
-			$newLinkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-		}
-		//$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
-		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
-		if( datetime == null )
-			$newDateTime.html("&nbsp;");
-		else
-		{
-			$newDateTime.attr("born",datetime);
-			$newDateTime.html(generateDateTimeBlock(new Date(datetime)));
-		}
-		$newRow.append($newLeft);
-		$newRow.append($newLeftIcon);
-		$newRow.append($newRight);
-		$newRow.append($newDateTime);
-		$newRow.append($newLinkBlock);
-		$("#item-blocks-table-body").append($newRow);
-		$newRight.focus(edit);
-		$newRight.blur(render);
-		$newRight.html(renderHtml(rightText, blockIdx));
 	}
+	return block;
+}
+
+function getHtml( block )
+{
+	block.html = mmd( block.text );
+	return block;
+}
+
+function deriveBlockData( block )
+{
+	return getHtml(getIcon(getLink(block)));
+}
+
+function renderBlock( t, block )
+{
+	t.children(".block-tags").html(block.tags);
+	t.children(".block-icon").html(block.icon);
+	t.children(".block-note").html(block.html);
+
+	var datetimeHtml = "";
+	if( block.datetime != undefined )
+		datetimeHtml = generateDatetimeHtml(new Date(block.datetime));
+	t.children(".block-datetime").html(datetimeHtml);
+
+	t.children(".block-link").html(block.link);
+	t.attr("block-data", JSON.stringify(block));
+	return t;
+}
+
+function makeBlock()
+{
+	var $newBlock = $('<tr/>', {'class':'block'});
+	var $newTags = $('<td/>', {'class':'block-tags', 'contenteditable':true});
+	var $newIcon = $('<td/>', {'class':'block-icon'});
+	var $newNote = $('<td/>', {'class':'block-note', 'contenteditable':true});
+	var $newDateTime = $('<td/>', {'class':'block-datetime'});
+	var $newLinkBlock = $('<td/>', {'class':'block-link'});
+
+	$newNote.focus(function()
+	{
+		var block = JSON.parse($(this).parent().attr("block-data"));
+		$(this).text(block.source);
+	});
+
+	$newNote.blur(function()
+	{
+		var block = JSON.parse($(this).parent().attr("block-data"));
+		block.source = $(this).text();
+		if( block.source != "" && block.datetime == undefined )
+			block.datetime = Date.now();
+		renderBlock($(this).parent(), deriveBlockData(block));
+	});
+
+	$newTags.blur(function()
+	{
+		var block = JSON.parse($(this).parent().attr("block-data"));
+		block.tags = $(this).text();
+		renderBlock($(this).parent(), deriveBlockData(block));
+	});
+
+	$newNote.on("input", function()
+	{
+		var p = $(this).parent();
+		if( $(this).text().length == 1 )
+		{
+			$(this).blur();
+			$(this).focus();
+			setEndOfContenteditable($(this)[0]);
+		}
+		if( $(this).text().length == 0 )
+		{
+			$(this).blur();
+			$(this).focus();
+			setEndOfContenteditable($(this)[0]);
+		}
+	});
+
+	$newBlock.append($newTags);
+	$newBlock.append($newIcon);
+	$newBlock.append($newNote);
+	$newBlock.append($newDateTime);
+	$newBlock.append($newLinkBlock);
+
+	return $newBlock;
 }
 
 function linkClick()
@@ -101,116 +160,10 @@ function checkBox( blockIdx )
 	textBlock.html(renderHtml(src, blockIdx));
 }
 
-function renderHtml( source, blockIdx )
-{
-	var html = toHtml(source);
-	if( html.startsWith("<span href=\"") )
-	{
-		var link = extractHrefFromLink(html);
-		html = toHtml(extractTextFromLink(html));
-		$linkBlock = $(".link-block[block="+blockIdx+"]");
-		$linkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-		$linkBlock.attr("link",link);
-	}
-	else
-	{
-		var $linkBlock = $(".link-block[block="+blockIdx+"]");
-		if( $linkBlock.html() != "" )
-		{
-			$linkBlock.html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
-			$linkBlock.removeAttr("link");
-		}
-	}
-	if( html.startsWith("http://") || html.startsWith("https://") || html.startsWith("file:////") )
-	{
-		var link = html;
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
-		var $linkBlock = $(".link-block[block="+blockIdx+"]");
-		$linkBlock.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
-		$linkBlock.attr("link", link);
-	}
-	else if( html.startsWith("&#0;&nbsp;") )
-	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>&#0;</span>");
-		html = html.substring(10);
-	}
-	else if( html.startsWith("&#9744;&nbsp;") )
-	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox'><input type='checkbox' onclick='checkBox("+blockIdx+"); return false;'></span>");
-		html = html.substring(13);
-	}
-	else if( html.startsWith("&#x2611;&nbsp;") )
-	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon checkbox'><input type='checkbox'  onclick='checkBox("+blockIdx+"); return false;' checked></span>");
-		html = html.substring(14);
-	}
-	else if( html.startsWith("&#128161;&nbsp;") )
-	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>&#128161;&nbsp;</span>");
-		html = html.substring(15);
-	}
-	else if( html.startsWith("&#128338;&nbsp;") )
-	{
-		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>&#128338;&nbsp;</span>");
-		html = html.substring(15);
-	}
-	else if( html.startsWith("---") )
-	{
-		html = "<hr>";
-	}
-	else
-	{
-		if( html == "" )
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DOT+"</span>");
-		}
-		else
-		{
-			$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'>"+DASH+"</span>");
-		}
-	}
-	return html;
-}
-
-function render( evt )
-{
-	var t = $(this);
-	clearTimeout(render.timeout);
-	render.timeout = setTimeout(function()
-	{
-		var blockIdx = t.attr("block");
-		var source = t.text();
-		t.html(renderHtml(source, blockIdx));
-		t.attr("source", source);
-	}, 1);
-/*
-		$(".link").click( function()
-			{
-				window.open($(this).attr("href"));
-			}
-		);
-*/
-}
-
-function edit( evt )
-{
-	var t = $(this);
-	clearTimeout(edit.timeout);
-	edit.timeout = setTimeout(function()
-	{
-		var itemIdx = t.attr("block");
-		var source = t.attr("source");
-		t.text(source);
-	}, 1);
-}
-
 function populate(item)
 {
 	// set the webpage's title
 	document.title = "PIMP: "+item.title;
-
-	localItem = item;
 	if( item.title == " " )
 		$(".item-title").html("...");
 	else
@@ -222,28 +175,25 @@ function populate(item)
 		{
 			var born = null;
 			var val = item.doc[i][key];
-			if( $.isPlainObject(val) )
-			{
-				var text = val.text;
-				if( val.url != undefined )
-				{
-					var url = val.url;
-					val = "["+title+"]("+val.url+")";
-				}
-				else
-					born = val.born
-				val = text;
-			}
-			addNewRow( i, key, val, born);
+			var blockData = {
+				"tags":key,
+				"source":val.text,
+				"datetime":val.born
+			};
+			var $block = makeBlock();
+			blockData = deriveBlockData(blockData);
+			renderBlock( $block, blockData);
+			$("#item-blocks-table-body").append($block);
 		}
 	}
-	if( item.doc.length == 0 )
-		addNewRow(0, "", "", "");
+	//if( item.doc.length == 0 )
+	//	addNewRow(0, "", "", "");
 	// Put the cursor at the end of the note
-	$(".right-text-block[block="+i+"]").focus();
+	//$(".right-text-block[block="+i+"]").focus();
 }
 
-function getCaretCharacterOffsetWithin(element) {
+function getCaretCharacterOffsetWithin(element)
+{
 	var caretOffset = 0;
 	var textRange;
 	var doc = element.ownerDocument || element.document;
@@ -305,32 +255,6 @@ function setSelectionRange(aNode, aOffset)
 	sel.addRange(range);
 }
 
-function pprint()
-{
-	var firsttimethru = true;
-	var str = "{\n";
-	$("#item-blocks-table-body").children("tr").each(function() {
-		var key = $(this).find(".left-text-block").text();
-		key += " ";
-		var value = $(this).find(".right-text-block").html();
-		if( firsttimethru )
-		{
-			firsttimethru = false;
-			str += "\t\"title\":\""+value+"\",\n";
-			str += "\t\"born\":\""+(new Date())+"\",\n";
-			str += "\t\"doc\":[\n";
-			str += "\t\t{\""+key+"\":\""+value+"\"}";
-		}
-		else
-		{
-			str += ",\n\t\t{\""+key+"\":\""+value+"\"}";
-		}
-	});
-	str += "\n\t]\n";
-	str += "}";
-	return str;
-}
-
 function jsonifyItem()
 {
 	var first_time_thru = false;
@@ -375,7 +299,7 @@ function padZero( number )
 	return number;
 }
 
-function generateDateTimeBlock( datetime )
+function generateDatetimeHtml( datetime )
 {
 	var datestr = padZero(datetime.getFullYear())+"/"+padZero(datetime.getMonth())+"/"+padZero(datetime.getDate());
 	var timestr = padZero(datetime.getHours())+":"+padZero(datetime.getMinutes())+":"+padZero(datetime.getSeconds());
@@ -410,202 +334,87 @@ function start()
 		ajaxLoad("pimp/"+itemId, ajaxOnResult);
 	});
 
-
+// Arrow Keys
 	$(document).keydown( function(e)
 	{
+		var f = $(":focus");
+		var p = f.parent();
+		var blockClass = f.attr("class");
 		if( e.which == 38 ) // UP
 		{
-			if( $(document.activeElement).hasClass("right-text-block") )
-			{
-				e.preventDefault();
-			 $(document.activeElement).parent("tr").prev("tr").find(".right-text-block").focus();
-
-			}
-			else if( $(document.activeElement).hasClass("left-text-block") )
-			{
-				e.preventDefault();
-			 $(document.activeElement).parent("tr").prev("tr").find(".left-text-block").focus();
-			}
+			e.preventDefault();
+			p.prev("tr").children("."+blockClass).focus();
 		}
 		else if( e.which == 40 ) // DOWN
 		{
 			e.preventDefault();
-			if( $(document.activeElement).hasClass("right-text-block") )
-			{
-				e.preventDefault();
-				$(document.activeElement).parent("tr").next("tr").find(".right-text-block").focus();
-			}
-			else if( $(document.activeElement).hasClass("left-text-block") )
-			{
-				e.preventDefault();
-				$(document.activeElement).parent("tr").next("tr").find(".left-text-block").focus();
-			}
+			p.next("tr").children("."+blockClass).focus();
 		}
 		else if( e.which == 37 ) // LEFT
 		{
-			if( $(document.activeElement).hasClass("right-text-block")
-			    && getCaretCharacterOffsetWithin(document.activeElement) == 0 )
+			if( f.hasClass("block-note")
+			    && getCaretCharacterOffsetWithin(f[0]) == 0 )
 			{
 				e.preventDefault();
-				$(document.activeElement).parent("tr").find(".left-text-block").focus();
+				p.children(".block-tags").focus();
 			}
 		}
 		else if( e.which == 39 ) // RIGHT
 		{
-			if( $(document.activeElement).hasClass("left-text-block")
-			    && getCaretCharacterOffsetWithin(document.activeElement) == $(document.activeElement).text().length )
+			if( f.hasClass("block-tags")
+			    && getCaretCharacterOffsetWithin(f[0]) == f.text().length )
 			{
 				e.preventDefault();
-				$(document.activeElement).parent("tr").find(".right-text-block").focus();
-			}
-		}
-	});
-	$(document).keypress( function(e)
-	{
-		var pos = getCaretCharacterOffsetWithin(document.activeElement);
-		var text = $(document.activeElement).text();
-		var end = text.length;
-		if( e.which == 13 ) // ENTER
-		{
-			if( !e.shiftKey )
-			{
-				var oldStr = text.substring(0,pos);
-				var newStr = text.substring(pos,end);
-				if( pos < end )
-					e.preventDefault();
-				var activeBlockIdx = $(document.activeElement).attr("block");
-				blockIdx++;
-				var $newRow = $('<tr/>', {'class':'block-row', 'block':blockIdx});
-				var $newLeft = $('<td/>', {'class':'left-text-block', 'contenteditable':true, 'block':blockIdx});
-				var $newLeftIcon = $('<td/>', {'class':'left-icon-block', 'block':blockIdx});
-				var $newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx});
-				var $newDateTimeBlock = $('<td/>', {'class':'date-time-block', 'block':blockIdx});
-				var $newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx});
-				$newDateTimeBlock.html("");
-				$newLeftIcon.html("<span class='left-icon'>"+DOT+"</span>");
-				$newRow.append($newLeft);
-				$newRow.append($newLeftIcon);
-				$newRow.append($newRight);
-				$newRow.append($newDateTimeBlock);
-				$newRow.append($newLinkBlock);
-				$("tr[block="+activeBlockIdx+"]").after($newRow);
-				if( document.activeElement.className == 'left-text-block' )
-				{
-					$(".left-text-block[block='"+activeBlockIdx+"']").text(oldStr);
-					$newLeft.text(newStr);
-					$newLeft.focus();
-					//$newLeft.find("br").remove();
-				}
-				else if( document.activeElement.className == 'right-text-block' )
-				{
-					if( oldStr == "" )
-					{
-						var blockId = $(document.activeElement).attr("block");
-						var $dateTimeBlock = $(".date-time-block[block='"+blockId+"']");
-						$dateTimeBlock.html("");
-						$dateTimeBlock.removeAttr("born");
-						$(".link-block[block='"+blockId+"']").html("");
-					}
-					$(".right-text-block[block='"+activeBlockIdx+"']").attr("source", oldStr);
-					$newRight.attr("source", newStr);
-					$(".right-text-block[block='"+activeBlockIdx+"']").text(oldStr);
-					$newRight.text(newStr);
-					if( newStr != "" )
-					{
-						var now = new Date();
-						$newDateTimeBlock.attr("born",now.toISOString());
-						$newDateTimeBlock.html(generateDateTimeBlock(now));
-					}
-					$newRight.focus(edit);
-					$newRight.blur(render);
-				}
-				$newRight.focus();
-			}
-			saveItem();
-		}
-		else if( $(document.activeElement).hasClass("right-text-block") && (e.which == 8 || e.which == 0) && $(document.activeElement).text().length == 1 )
-		{
-			var blockId = $(document.activeElement).attr("block");
-			$(".left-icon-block[block='"+blockId+"']").html("<span class='left-icon'>"+DOT+"</span>");
-			$(".date-time-block[block='"+blockId+"']").html("");
-			$(".link-block[block='"+blockId+"']").html("");
-		}
-		else if( e.which == 8  && pos == 0 ) // BACKSPACE
- 		{
-			if( $(document.activeElement).hasClass("right-text-block") )
-			{
-				if( $(document.activeElement).parent("tr").find(".left-text-block").text() == "" )
-				{
-			  	if( typeof $(document.activeElement).parent("tr").prev("tr").find(".right-text-block")[0] == "object" )
-					{
-						e.preventDefault();
-						var rowToRemove = $(document.activeElement).parent("tr");
-						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
-						var l = prevTextBlock.attr("source").length;
-						prevTextBlock.attr("source", prevTextBlock.attr("source")+$(document.activeElement).text());
-						prevTextBlock.text(prevTextBlock.attr("source"));
-						var prevDateTimeBlock = $(document.activeElement).parent("tr").prev("tr").find(".date-time-block");
-						var dateTimeBlock = $(document.activeElement).parent("tr").find(".date-time-block");
-						if( $(document.activeElement).text() != "" )
-						{
-							prevDateTimeBlock.html(dateTimeBlock.html());
-							prevDateTimeBlock.attr("born", dateTimeBlock.attr("born"));
-						}
-						setSelectionRange(prevTextBlock[0], l);
-						rowToRemove.remove();
-						e.returnValue = false;
-					}
-				}
-				else
-				{
-					e.preventDefault();
-					var leftBlock = $(document.activeElement).parent("tr").find(".left-text-block");
-					setEndOfContenteditable(leftBlock[0]);
-					leftBlock.focus();
-				}
-			}
-			else if( $(document.activeElement).hasClass("left-text-block") )
-			{
-				if( $(document.activeElement).parent("tr").find(".right-text-block").text() == "" )
-				{
-			  	if( typeof $(document.activeElement).parent("tr").prev("tr").find(".left-text-block")[0] == "object" )
-					{
-						e.preventDefault();
-						var rowToRemove = $(document.activeElement).parent("tr");
-						var prevTextBlock = $(document.activeElement).parent("tr").prev("tr").find(".left-text-block");
-						var l = prevTextBlock.text().length;
-						prevTextBlock.text(prevTextBlock.text()+$(document.activeElement).text());
-						setSelectionRange(prevTextBlock[0], l);
-						prevTextBlock.focus();
-						rowToRemove.remove();
-						e.returnValue = false;
-					}
-				}
-				else
-				{
-					e.preventDefault();
-					var rightBlock = $(document.activeElement).parent("tr").prev("tr").find(".right-text-block");
-					setEndOfContenteditable(rightBlock[0]);
-					rightBlock.focus();
-				}
-			}
-			saveItem();
-		}
-		else
-		{
-			if( document.activeElement.className == "right-text-block" )
-			{
-				if( end == 0 )
-				{
-					var now = new Date();
-					$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").attr("born",now.toISOString());
-					$(".date-time-block[block='"+$(document.activeElement).attr("block")+"']").html(generateDateTimeBlock(now));
-					$(".link-block[block='"+$(document.activeElement).attr("block")+"']").html("<span class='link-icon' onclick='createLinkedItem( $(this) );'>"+BLOCK+"</span>");
-				}
+				p.find(".block-note").focus();
 			}
 		}
 	});
 
+	// ENTER and BACKSPACE
+	$(document).keypress( function(e)
+	{
+		var f = $(":focus");
+		var blockClass = f.attr("class");
+		var p = f.parent();
+		var c = p.children(".block-tags");
+		if( blockClass == "block-tags" )
+			c = p.children(".block-note");
+		var pos = getCaretCharacterOffsetWithin(f[0]);
+		var text = f.text();
+		var end = text.length;
+		var oldStr = text.substring(0,pos);
+		var newStr = text.substring(pos,end);
+		if( e.which == 13 ) // ENTER
+		{
+			if( !e.shiftKey )
+			{
+				e.preventDefault();
+				f.text(oldStr);
+				var source = "";
+				var tags = "";
+				if( blockClass == "block-tags" )
+					tags = newStr;
+				else
+					source = newStr;
+				p.after(renderBlock(makeBlock(), deriveBlockData({"source":source, "tags":tags})));
+				p.next("tr").children("."+blockClass).focus();
+			}
+		}
+		else if( e.which == 8  && pos == 0 ) // BACKSPACE
+		{
+			var prev = p.prev("tr");
+			var prevBlockData = JSON.parse(prev.attr("block-data"));
+			var prevText = prevBlockData.source+text;
+			var prevBlock = prev.children("."+blockClass);
+			prevBlock.text(prevText);
+			if( c.text() == "" )
+				p.remove();
+			else
+				f.text("");
+			prevBlock.blur();
+			prevBlock.focus();
+		}
+	});
 }
 
 function ajaxLoad(uri, callback) {
