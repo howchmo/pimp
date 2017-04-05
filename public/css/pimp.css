@@ -1,6 +1,5 @@
 body {
 	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
-	font-size: 100%;
 	margin:0px;
 	overflow-x:hidden;
 }
@@ -13,73 +12,33 @@ a {
 	background:#DAECFF;
 	border-bottom-style:solid;
 	border-bottom-width:1px;
-	display: block;
-	font-size:24px;
+	font-size:18px;
 	font-weight:bold;
-	height: 30px;
+	height:32px;
 	line-height: 20px;
 	cursor: move;
-	padding:2px;
-	margin-bottom:2px;
+	padding-top:5px;
+	/* margin-bottom:2px; */
 	width:100%;
-	top:0px;
-	left:0px;
-	right:0px;
-	bottom:0px;
 }
-
+/*
 .box {
 	height:180px;
 	width:320px;
 	position:relative;
 	background-color:#EEEEEE;
 }
-
-.item-wrapper {
-	position:absolute;
-	overflow-y:auto;
-	left:0px;
-	right:0px;
-	bottom:0px;
-	top:35px;
-	width:100%;
-}
-
-table#item-blocks-table {
+*/
+table.item-blocks-table {
 	border-collapse: collapse ;
 	border-spacing:5px;
 	padding-left:5px;
 	padding-right:5px;
 	vertical-align:top;
+	width:100%;
 }
 
-.left-column {
-	position:absolute;
-	top:0px;
-	width:15%;
-	min-width:150px;
-	border-right-style:solid;
-	border-right-width:25px;
-	border-right-color:#003e80;
-	height:100%;
-	z-index:-1;
-	margin-left:-5px;
-	background:#F5F5F5;
-}
-/*
-.left-icon-block {
-	text-align:center;
-	vertical-align:top;
-	max-width:15px;
-	min-width:15px;
-	font-family:sans-serif;
-	font-weight:bold;
-	font-size:12pt;
-	padding-bottom:5px;
-	color:white;
-	cursor:pointer;
-}
-*/
+
 .block-icon a:visited {
 	color:#66b0ff;
 }
@@ -87,22 +46,23 @@ table#item-blocks-table {
 .block-icon {
 	position:relative;
 	top:-3px;
-	max-width:15px;
+	max-width:10px;
+	min-width:10px;
 }
 
 .checkbox {
+	position:relative;
 	right:4px !important;
 }
 
 .block-datetime {
 	vertical-align:top;
-	max-width:40px;
-	min-width:40px;
+	max-width:50px;
+	min-width:50px;
 	font-family:sans-serif;
 	font-weight:bold;
-	font-size:5pt;
-	padding-left:5px;
-	padding-right:5px;
+	padding-left:1px;
+	padding-right:1px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -111,73 +71,78 @@ table#item-blocks-table {
 	user-select: none;
 	text-align:center;
 	background:#F5F5F5;
+	display:none;
 }
 
 .date-string {
-	font-size:4pt;
+	font-size:5pt;
 }
 
 .time-string {
-	font-size:6pt;
+	font-size:5pt;
+}
+
+.left-column {
+	position:relative;
+	height:202px;
+	top:-211px;
+	width:24%;
+	border-right-style:solid;
+	border-right-width:20px;
+	border-right-color:#003e80;
+	z-index:-1;
+	background:#F5F5F5;
+}
+
+.item-wrapper {
+	position:relative;
+	overflow-y:scroll;
+	height:202px;
+	width:400px;
+	top:-9px;
 }
 
 .block-tags {
 	vertical-align:top;
-	width:15%;
-	min-width:140px;
-	min-height:26px;
+	width:25%;
 	text-align:right;
 	font-weight:bold;
-	font-size:12pt;
+	font-size:10pt;
 	font-family:serif;
-	height:100%;
 	padding-right:8px;
 	padding-bottom:5px;
 }
 
 .block-note {
 	vertical-align:top;
-	width:85%;
-	min-height:26px;
+	min-height:20px;
 	text-align:left;
-	padding-left:14px;
+	padding-left:10px;
 	padding-bottom:5px;
 	font-family:sans-serif;
-	font-size:12pt;
+	font-size:10pt;
 }
+
 .block-note a:visited {
 	color:#003e80;
 }
 
-
 .title-button {
-	float:right;
-	border-style:solid;
-	border-color:white;
-	border-width:1px;
-	color:white;
-	background:black;
-	line-height:14px;
-	padding-bottom:3px;
-	padding-left:2px;
-	padding-right:2px;
 }
 
 .title-button-container {
-	position:absolute;
-	top:5px;
-	right:5px;
-	transform-origin:100% 0%;
-	transform: scale(0.7);
+	float:right;
+	padding:2px;
 	cursor:pointer;
 }
 
-#item-born {
-	position:absolute;
-	top:16px;
-	right:5px;
+.item-born {
+	position:relative;
+	top:-5px;
+	left:18px;
+	float:right;
 	cursor:none;
-	font-size:8pt;
+	font-size:6pt;
 	font-style:italic;
 	color:grey;
 }
@@ -185,8 +150,12 @@ table#item-blocks-table {
 .item-title {
 	float:left;
 	width:80%;
-	padding-top:3px;
+	padding-top:2px;
 	padding-left:6px;
+	cursor:text;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .internal-table {
@@ -210,11 +179,15 @@ table#item-blocks-table {
 	color:white;
 	text-align:center;
 	background:black !important;
-	font-size:6pt;
+	font-size:4pt;
 	font-weight:bold;
 }
 
 .note {
+	margin:30px;
+	max-width:400px;
+	max-height:240px;
+	border:grey 3px solid;
 }
 
 tr:hover {
@@ -228,7 +201,7 @@ tr:focus {
 }
 
 tr {
-	height:26px;
+	height:20px;
 }
 
 a:link {
@@ -248,7 +221,6 @@ a:link {
 	vertical-align:middle;
 	font-family:sans-serif;
 	font-weight:bold;
-	font-size:12pt;
 	padding-bottom:5px;
 	background:#003e80;
 	color:#DAECFF;

@@ -1,8 +1,8 @@
 $(document).ready(start());
 
 var icons = {
-	"+":"<input type='checkbox' checked></input",
-	"-":"<input type='checkbox'></input>",
+	"+":"<span class='checkbox'><input type='checkbox' checked></input></span>",
+	"-":"<span class='checkbox'><input type='checkbox'></input></span>",
 	"%":"&#128338;",
 	"!":"&#128161;",
 	"?":"&#0;"
@@ -144,7 +144,7 @@ function extractTextFromLink( str )
 {
 	return((str.split(">")[1]).split("<")[0]);
 }
-
+/*
 function checkBox( blockIdx )
 {
 	var textBlock = $(".right-text-block[block="+blockIdx+"]");
@@ -159,7 +159,7 @@ function checkBox( blockIdx )
 	textBlock.attr("source", src);
 	textBlock.html(renderHtml(src, blockIdx));
 }
-
+*/
 function populate(item)
 {
 	// set the webpage's title
@@ -168,7 +168,7 @@ function populate(item)
 		$(".item-title").html("...");
 	else
 		$(".item-title").html(item.title);
-	$("#item-born").html(item.born);
+	$(".item-born").html(item.born);
 	for( var i = 0; i < item.doc.length; i++ )
 	{
 		for( var key in item.doc[i] )
@@ -183,7 +183,7 @@ function populate(item)
 			var $block = makeBlock();
 			blockData = deriveBlockData(blockData);
 			renderBlock( $block, blockData);
-			$("#item-blocks-table-body").append($block);
+			$(".item-blocks-table-body").append($block);
 		}
 	}
 	//if( item.doc.length == 0 )
@@ -270,7 +270,7 @@ function jsonifyItem()
 	}
 	jitem["born"] = new Date();
 	jitem["doc"] = [];
-	$("#item-blocks-table-body").children("tr").each(function() {
+	$(".item-blocks-table-body").children("tr").each(function() {
 		var key = $(this).find(".left-text-block").text();
 		var $rightTextBlock = $(this).find(".right-text-block");
 		value = $rightTextBlock.attr("source");
@@ -464,7 +464,7 @@ function saveItem() {
 		})
 	}
 }
-
+/*
 function createLinkedItem( rightIcon ) {
 	var $rightTextBlock = rightIcon.parent().parent().find(".right-text-block");
 	var text = $rightTextBlock.text();
@@ -490,3 +490,4 @@ function createLinkedItem( rightIcon ) {
 			window.open(link);
 		});
 }
+*/
