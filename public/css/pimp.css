@@ -1,14 +1,12 @@
 body {
 	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
-	margin:0px;
-	overflow-x:hidden;
 }
 
 a {
 	text-decoration:none;
 }
 
-.header {
+.item-header {
 	background:#DAECFF;
 	border-bottom-style:solid;
 	border-bottom-width:1px;
@@ -94,7 +92,7 @@ table.item-blocks-table {
 	background:#F5F5F5;
 }
 
-.item-wrapper {
+.item-content-wrapper {
 	position:relative;
 	overflow-y:scroll;
 	height:202px;
@@ -138,8 +136,8 @@ table.item-blocks-table {
 
 .item-born {
 	position:relative;
-	top:-5px;
-	left:18px;
+	bottom:5px;
+	right:2px;
 	float:right;
 	cursor:none;
 	font-size:6pt;
@@ -183,25 +181,26 @@ table.item-blocks-table {
 	font-weight:bold;
 }
 
-.note {
-	margin:30px;
+.item {
+	margin:6px;
 	max-width:400px;
 	max-height:240px;
 	border:grey 3px solid;
 }
 
-tr:hover {
+table.item-blocks-table tr:hover {
 	border-top:1px #003e80 solid;
 	border-bottom:1px #003e80 solid;
 }
 
-tr:focus {
+table.item-blocks-table tr:focus {
 	border-top:1px #003e80 solid;
 	border-bottom:1px #003e80 solid;
 }
 
-tr {
+table.item-blocks-table tr {
 	height:20px;
+	vertical-align:top;
 }
 
 a:link {

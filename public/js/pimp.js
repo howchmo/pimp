@@ -7,6 +7,31 @@ var icons = {
 	"!":"&#128161;",
 	"?":"&#0;"
 };
+
+function makeItem(id)
+{
+	var $item = $('<div/>', {'class':'item', 'id':id});
+	var $itemHeader = $('<div/>', {'class':'item-header'});
+	var $itemTitle = $('<span/>', {'class':'item-title', 'contenteditable':'true', 'html':'&nbsp;'});
+	var $headerButtonContainer = $('<div/>', {'class':'item-button-container'});
+	var $itemBorn = $('<div/>', {'class':'item-born'});
+	var $itemContentWrapper = $('<div/>', {'class':'item-content-wrapper'});
+	var $itemBlocksTable = $('<table/>', {'class':'item-blocks-table'});
+	var $itemBlocksTableBody = $('<tbody/>', {'class':'item-blocks-table-body'});
+	var $leftColumn = $('<div/>', {'class':'left-column'});
+	
+	$itemHeader.append($itemTitle);
+	$itemHeader.append($headerButtonContainer);
+	$itemHeader.append($itemBorn);
+	$item.append($itemHeader);
+	$itemBlocksTable.append($itemBlocksTableBody);
+	$itemContentWrapper.append($itemBlocksTable);
+	$item.append($itemContentWrapper);
+	$item.append($leftColumn);
+	
+	return $item;
+}
+
 function getLink( block )
 {
 	var str = block.text = block.source;
@@ -25,7 +50,7 @@ function getLink( block )
 		block.link="&#9608;";
 	else
 	{
-		block.link="";
+		block.link="&nbsp;&nbsp;&nbsp;";
 		block.datetime=undefined;
 	}
 	return block;
@@ -160,15 +185,25 @@ function checkBox( blockIdx )
 	textBlock.html(renderHtml(src, blockIdx));
 }
 */
+
+function createFirstItem(id)
+{
+	var $item = makeItem(id);
+	$("table tr td").append($item);
+	$.get("pimp/"+id, function(data) {
+		populate(data);
+	});
+}
+
 function populate(item)
 {
+	var itemId = "#"+item._id;
 	// set the webpage's title
-	document.title = "PIMP: "+item.title;
 	if( item.title == " " )
-		$(".item-title").html("...");
+		$(itemId+" .item-title").html("...");
 	else
-		$(".item-title").html(item.title);
-	$(".item-born").html(item.born);
+		$(itemId+" .item-title").html(item.title);
+	$(itemId+" .item-born").html(item.born);
 	for( var i = 0; i < item.doc.length; i++ )
 	{
 		for( var key in item.doc[i] )
@@ -183,7 +218,8 @@ function populate(item)
 			var $block = makeBlock();
 			blockData = deriveBlockData(blockData);
 			renderBlock( $block, blockData);
-			$(".item-blocks-table-body").append($block);
+			var itemBody = $(itemId+" .item-blocks-table-body");
+			itemBody.append($block);
 		}
 	}
 	//if( item.doc.length == 0 )
@@ -311,6 +347,7 @@ function start()
 {
 	$(function() { //DOM Ready
 
+		document.title = "P.I.M.P. Your Data";
 		itemId = window.location.hash.substr(1);
 		$(".clone-button").click(function() {
 			/*
@@ -331,7 +368,9 @@ function start()
 		{
 			itemId = "000000000000000000000000";
 		}
-		ajaxLoad("pimp/"+itemId, ajaxOnResult);
+		//ajaxLoad("pimp/"+itemId, ajaxOnResult);
+		createFirstItem(itemId);
+		
 	});
 
 // Arrow Keys
