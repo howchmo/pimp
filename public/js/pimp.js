@@ -1,5 +1,114 @@
 $(document).ready(start());
 
+var items = {};
+
+function onBlockClick( e )
+{
+	var newId = $(e.target).attr("item");	
+	var $item = $(e.target).parents(".item");
+	var id = $item.attr("id");
+	var $cell = $item.parent();
+	var $table = $("#table-items");
+	var x = $cell.index();
+	var y = $cell.parent().index();
+	var newx = x+1;
+	var newy = y;
+	if(items[id].children.length > 0 )
+	{
+		var lastChildId = items[id].children[items[id].children.length-1];
+		while( $table[0].rows[newy].cells[newx].children[0].getAttribute('id') != lastChildId )
+		{
+			newy++;
+		}
+		newy++;
+		while( rowToRightIsNotEmpty(newx, newy ) )
+		{
+			newy++;
+		}
+	}
+	var newCell = getTableCell(newx, newy);
+	if( y < newy && (newCell.innerHTML != "" || rowIsNotBranch(newx, newy, newId)) ) 
+	{
+		console.log("	make a new row");
+
+		var newRow = $table[0].insertRow(newy);
+		for( var i=0; i<newx; i++ )
+		{
+			newRow.insertCell(i);
+		}
+		newCell = newRow.insertCell(newx);
+
+		for( var i=newx+1; i<document.getElementsByTagName("table")[0].rows[y].length; i++ )
+			newRow.insertCell(i);
+	}
+	var $newItem = makeItem(newId);
+	$(newCell).append($newItem);
+	$.get("pimp/"+newId, function(data) {
+		populate(data);
+	});
+	items[id]["children"].push(newId);
+	items[newId] = {"children":[]};
+}
+
+function getTableCell( x, y )
+{
+	console.log("getTableCell( "+x+", "+y+" )");
+	var table = document.getElementsByTagName("table")[0];
+	if( table.rows[y] == undefined )
+	{
+		table.insertRow(y);
+		for( var i=0; i<x; i++ )
+			table.rows[y].insertCell(i);
+	}
+	if( table.rows[y].cells[x] == undefined )
+	{
+		console.log("	table.rows[y].cells.length = "+table.rows[y].cells.length+" < "+x);
+		if( table.rows[y].cells.length < x )
+			for( var i=table.rows[y].cells.length; i<x; i++ )
+			{
+				console.log("	table.rows["+y+"].insertCell("+i+") = "+table.rows[y].insertCell(i));
+				table.rows[y].insertCell(i);
+			}
+			table.rows[y].insertCell(x);
+	}
+	return table.rows[y].cells[x];
+}
+
+function rowIsNotBranch( x, y, id )
+{
+	var subPos = id.length-2;
+	if( subPos < 3 )
+		subPos = 3;
+	for( var i=1; i<document.getElementsByTagName("table")[0].rows[y].length; i++ )
+	{
+		//console.log("rowIsNotBranch ["+i+"] "+document.getElementsByTag0Name("table")[0].rows[y].cells[i].innerHTML+" == "+id);
+		if( document.getElementsByTagName("table")[0].rows[y].cells[i].innerHTML.substring(0,subPos) == id.substring(0,subPos) )
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+function rowToRightIsNotEmpty( x, y )
+{
+	var logStr = "rowToRightIsNotEmpty( "+x+", "+y+" ) = ";
+	var table = document.getElementsByTagName("table")[0];
+	if( table.rows[y] != undefined )
+	{
+		for( var i=x+1; i < table.rows[y].cells.length; i++ )
+		{
+			if( document.getElementsByTagName("table")[0].rows[y].cells[i].innerHTML != "" )
+			{
+				console.log(logStr+" true");
+				return true;
+			}
+		}
+	}
+	console.log(logStr+" false");
+	return false;
+}
+
 var icons = {
 	"+":"<span class='checkbox'><input type='checkbox' checked></input></span>",
 	"-":"<span class='checkbox'><input type='checkbox'></input></span>",
@@ -35,19 +144,25 @@ function makeItem(id)
 function getLink( block )
 {
 	var str = block.text = block.source;
+	// is the source for the note a Markdown link?
 	if( str.startsWith("[") )
 	{
 		var n = str.lastIndexOf("](");
-		var link = str.substring(n+2, str.length-1);
-		block.link = "<a href=\""+link+"\">&#9654;</a>";
+		var link = str.substring(n+3, str.length-1);
+		//block.link = "<a class=\"icon-link\" href=\"#\" item=\"+block+\" onclick=\"onBlockClick('"+block.id+", "+link+"');\">&#9654;</a>";
+		block.link = "<a class=\"icon-link\" href=\"#\" item=\""+link+"\" onclick=\"onBlockClick(event);\">&#9654;</a>";
 		block.text = str.substring(1, n);
 	}
+	// is it just a link (copy and pasted during research for example)
 	else if( str.startsWith("http://") || str.startsWith("https://") )
 	{
-		block.icon = '<a href="'+str+'">&#9654;</a>';
+		block.icon = '<a href="#" class="icon-link" onclick="window.open(\''+str+'\')">&#9654;</a>';
 	}
+	// if it isn't link but it is not empty make it a button
+	// that will generate a new item linked to that block
 	else if( str.length > 0 )
 		block.link="&#9608;";
+	// else pad it with blanks so the column at least shows up
 	else
 	{
 		block.link="&nbsp;&nbsp;&nbsp;";
@@ -213,7 +328,8 @@ function populate(item)
 			var blockData = {
 				"tags":key,
 				"source":val.text,
-				"datetime":val.born
+				"datetime":val.born,
+				"id":itemId
 			};
 			var $block = makeBlock();
 			blockData = deriveBlockData(blockData);
@@ -348,29 +464,13 @@ function start()
 	$(function() { //DOM Ready
 
 		document.title = "P.I.M.P. Your Data";
-		itemId = window.location.hash.substr(1);
-		$(".clone-button").click(function() {
-			/*
-			console.log("clone");
-			ajaxLoad("pimp/"+itemId, ajaxOnResult);
-			*/
-			saveItem();
-		});
-
-		$(".unhide-button").click(function() {
-			saveItem();
-		});
-
-		$(".close-button").click(function() {
-			saveItem();
-		});
+		var itemId = window.location.hash.substr(1);
 		if( itemId == "" )
 		{
 			itemId = "000000000000000000000000";
 		}
-		//ajaxLoad("pimp/"+itemId, ajaxOnResult);
+		items[itemId] = {"children":[]};
 		createFirstItem(itemId);
-		
 	});
 
 // Arrow Keys
@@ -455,7 +555,7 @@ function start()
 		}
 	});
 }
-
+/*
 function ajaxLoad(uri, callback) {
 	console.log("ajaxLoad('"+uri+"')");
 	var request = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
@@ -476,6 +576,7 @@ function ajaxOnResult(evt) {
 		console.log("HTTP status: "+evt.currentTarget.status);
 	}
 }
+*/
 
 function saveItem() {
 	var str = JSON.stringify(jsonifyItem(), function(key, value) { return value === "" ? "" : value });
@@ -503,6 +604,7 @@ function saveItem() {
 		})
 	}
 }
+
 /*
 function createLinkedItem( rightIcon ) {
 	var $rightTextBlock = rightIcon.parent().parent().find(".right-text-block");
