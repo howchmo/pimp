@@ -231,12 +231,15 @@ a:link {
 	color:#e6ccff;
 }
 
+a:visited {
+}
+
 .link {
-	color:#e6ccff;
+	color:#003e80;
 }
 
 .link:hover {
-	color:red;
+	color:#e6ccff;
 }
 
 .link-block {
@@ -254,6 +257,7 @@ a:link {
 .link-block a:visited {
 	color:#66b0ff;
 }
+
 
 .link-icon {
 }
