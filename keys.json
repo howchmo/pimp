@@ -1,0 +1,8 @@
+{
+  "mongoHost": "localhost",
+  "mongoPort": "27017",
+  "mongoDatabase": "pimp",
+  "mongoUser": "",
+  "mongoPassword": ""
+}
+

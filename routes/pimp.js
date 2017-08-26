@@ -1,5 +1,5 @@
 var fs = require('fs');
-var mongoKeys = JSON.parse(fs.readFileSync('.keys.json', 'utf8'));
+var mongoKeys = JSON.parse(fs.readFileSync('keys.json', 'utf8'));
 
 var mongo = require('mongodb');
 var ObjectID = mongo.ObjectID;
@@ -8,7 +8,16 @@ var Server = mongo.Server,
 Db = mongo.Db,
 BSON = mongo.BSONPure;
 
-var mongoUri = 'mongodb://'+mongoKeys.mongoUser+':'+mongoKeys.mongoPassword+'@'+mongoKeys.mongoHost+":"+mongoKeys.mongoPort+'/'+mongoKeys.mongoDatabase;
+var userPassword = "";
+console.log(mongoKeys.user);
+if( mongoKeys.user != undefined )
+{
+	userPassword = mongoKeys.user;
+	if( mongoKeys.mongoPassword != undefined )
+		userPassword += ':'+mongoKeys.mongoPassword;
+	userPassword += '@';
+}
+var mongoUri = 'mongodb://'+userPassword+mongoKeys.mongoHost+":"+mongoKeys.mongoPort+'/'+mongoKeys.mongoDatabase;
 var items;
 mongo.MongoClient.connect(mongoUri, function( err, db )
 {
