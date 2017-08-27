@@ -9,10 +9,10 @@ Db = mongo.Db,
 BSON = mongo.BSONPure;
 
 var userPassword = "";
-console.log(mongoKeys.user);
-if( mongoKeys.user != undefined )
+console.log(mongoKeys.mongoUser);
+if( mongoKeys.mongoUser != undefined )
 {
-	userPassword = mongoKeys.user;
+	userPassword = mongoKeys.mongoUser;
 	if( mongoKeys.mongoPassword != undefined )
 		userPassword += ':'+mongoKeys.mongoPassword;
 	userPassword += '@';
