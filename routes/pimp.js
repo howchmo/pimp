@@ -9,11 +9,11 @@ Db = mongo.Db,
 BSON = mongo.BSONPure;
 
 var userPassword = "";
-console.log(mongoKeys.mongoUser);
-if( mongoKeys.mongoUser != undefined )
+console.log("\""+(mongoKeys.mongoUser != undefined)+"\"");
+if( mongoKeys.mongoUser != "" || mongoKeys.mongoUser == undefined )
 {
 	userPassword = mongoKeys.mongoUser;
-	if( mongoKeys.mongoPassword != undefined )
+	if( mongoKeys.mongoPassword != "" || mongoKeys.mongoPassword == undefined )
 		userPassword += ':'+mongoKeys.mongoPassword;
 	userPassword += '@';
 }
@@ -32,7 +32,6 @@ mongo.MongoClient.connect(mongoUri, function( err, db )
 				console.log("The 'items' collection doesn't exist. Creating it with sample data...");
 				populateDB(db);
 			}
-			items = collection;
 		});
 	}
 	else
@@ -118,7 +117,8 @@ var startItems={"_id":ObjectID("000000000000000000000000"),"title":"P.I.M.P","do
 /*------------------------------------------------------------------------------------------------*/
 // Populate database with sample data -- Only used once: the first time the application is started.
 // You'd typically not find this code in a real-life app, since the database would already exist.
-var populateDB = function()
+var populateDB = function(db)
 {
+		items = db.collection("items");
 		items.insert(startItems, {safe:true}, function(err, result) {});
 };
