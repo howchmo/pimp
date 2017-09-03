@@ -1,8 +1,8 @@
 {
-  "mongoHost": "ds039960.mlab.com",
-  "mongoPort": "39960",
+  "mongoHost": "localhost",
+  "mongoPort": "122710",
   "mongoDatabase": "pimp",
-  "mongoUser": "howchmo",
-  "mongoPassword": "NaRuEGV5XmN8pvQa"
+  "mongoUser": "",
+  "mongoPassword": ""
 }
 
