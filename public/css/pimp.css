@@ -12,7 +12,7 @@ a {
 	border-bottom-width:1px;
 	font-size:18px;
 	font-weight:bold;
-	height:32px;
+	height:20px;
 	line-height: 20px;
 	cursor: move;
 	padding-top:5px;
@@ -84,8 +84,8 @@ table.item-blocks-table {
 
 .left-column {
 	position:relative;
-	height:202px;
-	top:-211px;
+	height:214px;
+	top:-214px;
 	width:24%;
 	border-right-style:solid;
 	border-right-width:20px;
@@ -97,7 +97,7 @@ table.item-blocks-table {
 .item-content-wrapper {
 	position:relative;
 	overflow-y:scroll;
-	height:211px;
+	height:214px;
 	width:405px;
 	top:0px;
 }
@@ -150,7 +150,6 @@ table.item-blocks-table {
 .item-title {
 	float:left;
 	width:80%;
-	padding-top:2px;
 	padding-left:6px;
 	cursor:text;
 	white-space: nowrap;
@@ -201,7 +200,6 @@ table.item-blocks-table tr:focus {
 }
 
 table.item-blocks-table tr {
-	height:17px;
 	vertical-align:top;
 }
 
@@ -226,7 +224,8 @@ a:link {
 	background:#003e80;
 	color:#DAECFF;
 	cursor:pointer;
-	width:18px;
+	width:13px;
+	font-size:75%;
 }
 
 .block-link a:visited {
