@@ -85,7 +85,7 @@ table.item-blocks-table {
 .left-column {
 	position:relative;
 	height:214px;
-	top:-214px;
+	top:-233px;
 	width:24%;
 	border-right-style:solid;
 	border-right-width:20px;
@@ -99,7 +99,7 @@ table.item-blocks-table {
 	overflow-y:scroll;
 	height:214px;
 	width:405px;
-	top:0px;
+	top:-19px;
 }
 
 .block-tags {
@@ -138,7 +138,7 @@ table.item-blocks-table {
 
 .item-born {
 	position:relative;
-	bottom:5px;
+	bottom:15px;
 	right:2px;
 	float:right;
 	cursor:none;
