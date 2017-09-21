@@ -128,12 +128,17 @@ table.item-blocks-table {
 }
 
 .title-button {
+	position: absolute;
+	transform: scale(0.5,0.5);
 }
 
 .title-button-container {
+	position:relative;
 	float:right;
 	padding:2px;
 	cursor:pointer;
+	top:-13px;
+	right:27px;
 }
 
 .item-born {

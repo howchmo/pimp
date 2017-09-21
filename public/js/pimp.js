@@ -2,6 +2,71 @@ $(document).ready(start());
 
 var items = {};
 
+function pruneBlock(id)
+{
+	console.log("pruneBock("+id+")");
+	var parentId = items[id]["parent"];
+	var children = items[parentId]["children"];
+	pruneBlocks(id);
+	// check to see if the parent is empty to the right
+	// if so, move everything to the left down and delete
+	// the empty row above
+	if( children.length > 0 )
+	{
+		var table = document.getElementsByTagName("table")[0];
+		var cell = $("#"+parentId).parent()[0];
+		var row = cell.parentNode;
+		var x = cell.cellIndex;
+		var y = row.rowIndex;
+		if( !rowToRightIsNotEmpty(x, y) )
+		{
+			var newX = x;
+			while( newX >= 0 )
+			{
+				table.rows[y+1].cells[newX].innerHTML = table.rows[y].cells[newX].innerHTML;
+				newX--;
+			}
+			table.deleteRow(y);
+		}
+	}
+	// TASK: re-establish the onclick functions
+}
+
+function pruneBlocks(id)
+{
+	var parentId = items[id]["parent"];
+	var children = items[parentId]["children"];
+	// recursively traverse the tree
+	// until you get to a leaf then
+	// delete all the leaves
+	for( var i=items[id]["children"].length; i > 0; i-- )
+	{
+		var child = (items[id]["children"])[i-1];
+		pruneBlocks(child);
+	}
+	deleteCellById(id);
+	// remove this as a child from its parent
+	// remove the item itself from the index
+	delete items[id];
+	var idx = children.indexOf(id);
+	children.splice(idx,1);
+}
+
+function deleteCellById( id )
+{
+	var table = document.getElementsByTagName("table")[0];
+	var cell = $("#"+id).parent()[0];
+	var row = cell.parentNode;
+	var x = cell.cellIndex;
+	var y = row.rowIndex;
+	var leftCell = getTableCell((x-1),y).firstChild;
+	if( leftCell == null )
+		table.deleteRow(y);
+	else
+		if( leftCell.id == items[id]["parent"] )
+			row.deleteCell(x);
+}
+
 function onBlockClick( e )
 {
 	var newId = $(e.target).attr("item");	
@@ -26,11 +91,9 @@ function onBlockClick( e )
 			newy++;
 		}
 	}
-	var newCell = getTableCell(newx, newy);
-	if( y < newy && (newCell.innerHTML != "" || rowIsNotBranch(newx, newy, newId)) ) 
+	var newCell = null;
+	if( y < newy && rowToLeftIsNotEmpty(newx, newy) )
 	{
-		console.log("	make a new row");
-
 		var newRow = $table[0].insertRow(newy);
 		for( var i=0; i<newx; i++ )
 		{
@@ -41,20 +104,24 @@ function onBlockClick( e )
 		for( var i=newx+1; i<document.getElementsByTagName("table")[0].rows[y].length; i++ )
 			newRow.insertCell(i);
 	}
+	else
+	{
+		newCell = getTableCell(newx, newy);
+	}
+
 	var $newItem = makeItem(newId);
 	$(newCell).append($newItem);
 	$.get("pimp/"+newId, function(data) {
 		populate(data);
 	});
 	items[id]["children"].push(newId);
-	items[newId] = {"children":[]};
+	items[newId] = {"children":[],"parent":id};
 }
 
 function getTableCell( x, y )
 {
-	console.log("getTableCell( "+x+", "+y+" )");
 	var table = document.getElementsByTagName("table")[0];
-	if( table.rows[y] == undefined )
+	if( table.rows[y] == undefined ) 
 	{
 		table.insertRow(y);
 		for( var i=0; i<x; i++ )
@@ -62,37 +129,20 @@ function getTableCell( x, y )
 	}
 	if( table.rows[y].cells[x] == undefined )
 	{
-		console.log("	table.rows[y].cells.length = "+table.rows[y].cells.length+" < "+x);
 		if( table.rows[y].cells.length < x )
+		{
 			for( var i=table.rows[y].cells.length; i<x; i++ )
 			{
-				console.log("	table.rows["+y+"].insertCell("+i+") = "+table.rows[y].insertCell(i));
 				table.rows[y].insertCell(i);
 			}
-			table.rows[y].insertCell(x);
+		}
+		table.rows[y].insertCell(x);
 	}
 	return table.rows[y].cells[x];
 }
 
-function rowIsNotBranch( x, y, id )
-{
-	var subPos = id.length-2;
-	if( subPos < 3 )
-		subPos = 3;
-	for( var i=1; i<document.getElementsByTagName("table")[0].rows[y].length; i++ )
-	{
-		//console.log("rowIsNotBranch ["+i+"] "+document.getElementsByTag0Name("table")[0].rows[y].cells[i].innerHTML+" == "+id);
-		if( document.getElementsByTagName("table")[0].rows[y].cells[i].innerHTML.substring(0,subPos) == id.substring(0,subPos) )
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
 function rowToRightIsNotEmpty( x, y )
 {
-	var logStr = "rowToRightIsNotEmpty( "+x+", "+y+" ) = ";
 	var table = document.getElementsByTagName("table")[0];
 	if( table.rows[y] != undefined )
 	{
@@ -100,12 +150,26 @@ function rowToRightIsNotEmpty( x, y )
 		{
 			if( document.getElementsByTagName("table")[0].rows[y].cells[i].innerHTML != "" )
 			{
-				console.log(logStr+" true");
 				return true;
 			}
 		}
 	}
-	console.log(logStr+" false");
+	return false;
+}
+
+function rowToLeftIsNotEmpty( x, y )
+{
+	var table = document.getElementsByTagName("table")[0];
+	if( table.rows[y] != undefined )
+	{
+		for( var i=table.rows[y].cells.length; i>1; i-- )
+		{
+			if( document.getElementsByTagName("table")[0].rows[y].cells[i-1].innerHTML != "" )
+			{
+				return true;
+			}
+		}
+	}
 	return false;
 }
 
@@ -122,7 +186,8 @@ function makeItem(id)
 	var $item = $('<div/>', {'class':'item', 'id':id});
 	var $itemHeader = $('<div/>', {'class':'item-header'});
 	var $itemTitle = $('<span/>', {'class':'item-title', 'contenteditable':'true', 'html':'&nbsp;'});
-	var $headerButtonContainer = $('<div/>', {'class':'item-button-container'});
+	var $headerButtonContainer = $('<div/>', {'class':'title-button-container'});
+	var $closeButton = $('<button/>', {'class':'title-button','text':'x'});
 	var $itemBorn = $('<div/>', {'class':'item-born'});
 	var $itemContentWrapper = $('<div/>', {'class':'item-content-wrapper'});
 	var $itemBlocksTable = $('<table/>', {'class':'item-blocks-table'});
@@ -130,6 +195,10 @@ function makeItem(id)
 	var $leftColumn = $('<div/>', {'class':'left-column'});
 	
 	$itemHeader.append($itemTitle);
+	$closeButton.click(function() {
+		pruneBlock(id);
+	});
+	$headerButtonContainer.append($closeButton);
 	$itemHeader.append($headerButtonContainer);
 	$itemHeader.append($itemBorn);
 	$item.append($itemHeader);
