@@ -32,6 +32,10 @@ mongo.MongoClient.connect(mongoUri, function( err, db )
 				console.log("The 'items' collection doesn't exist. Creating it with sample data...");
 				populateDB(db);
 			}
+			else
+			{
+				items = collection;
+			}
 		});
 	}
 	else
@@ -54,7 +58,10 @@ exports.findAll = function(req, res)
 {
 	items.find().toArray(function(err, items)
 	{
-		res.send(items);
+		if( err )
+			console.log("ERROR");
+		else
+			res.send(items);
 	});
 };
 
