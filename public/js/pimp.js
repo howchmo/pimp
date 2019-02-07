@@ -49,7 +49,6 @@ function addNewRow( i, leftText, rightText, datetime )
 			$newLinkBlock = $('<td/>', {'class':'link-block', 'block':blockIdx, 'link':link});
 			$newLinkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		}
-		//$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		$newRight = $('<td/>', {'class':'right-text-block', 'contenteditable':true, 'block':blockIdx, 'source':rightText, 'html':toHtml(rightText)});
 		if( datetime == null )
 			$newDateTime.html("&nbsp;");
@@ -70,10 +69,9 @@ function addNewRow( i, leftText, rightText, datetime )
 	}
 }
 
-function linkClick()
+function linkClick( url )
 {
-	alert("this");
-	window.open($(this).attr("href"));
+	window.open(url);
 }
 
 function extractHrefFromLink( str )
@@ -184,13 +182,6 @@ function render( evt )
 		t.html(renderHtml(source, blockIdx));
 		t.attr("source", source);
 	}, 1);
-/*
-		$(".link").click( function()
-			{
-				window.open($(this).attr("href"));
-			}
-		);
-*/
 }
 
 function edit( evt )
@@ -276,7 +267,7 @@ function setEndOfContenteditable(contentEditableElement)
 		range = document.createRange();//Create a range (a range is a like the selection but invisible)
 		range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
 		range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-		selection = window.getSelection();//get the selection object (allows you to change selection)
+		selection = window.getparentSelection();//get the selection object (allows you to change selection)
 		selection.removeAllRanges();//remove any selections already made
 		selection.addRange(range);//make the range you have just created the visible selection
 	}
@@ -418,13 +409,12 @@ function start()
 			if( $(document.activeElement).hasClass("right-text-block") )
 			{
 				e.preventDefault();
-			 $(document.activeElement).parent("tr").prev("tr").find(".right-text-block").focus();
-
+				$(document.activeElement).parent("tr").prev("tr").find(".right-text-block").focus();
 			}
 			else if( $(document.activeElement).hasClass("left-text-block") )
 			{
 				e.preventDefault();
-			 $(document.activeElement).parent("tr").prev("tr").find(".left-text-block").focus();
+				$(document.activeElement).parent("tr").prev("tr").find(".left-text-block").focus();
 			}
 		}
 		else if( e.which == 40 ) // DOWN
@@ -460,7 +450,7 @@ function start()
 			}
 		}
 	});
-	$(document).keypress( function(e)
+	$(document).keydown( function(e)
 	{
 		var pos = getCaretCharacterOffsetWithin(document.activeElement);
 		var text = $(document.activeElement).text();
