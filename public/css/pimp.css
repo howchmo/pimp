@@ -1,5 +1,6 @@
 body {
 	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+	background-image: linear-gradient(90deg, grey, white);
 }
 
 a {
@@ -7,17 +8,49 @@ a {
 }
 
 .item-header {
-	background:#DAECFF;
-	border-bottom-style:solid;
-	border-bottom-width:1px;
-	font-size:18px;
+	background:grey;
+	font-size:10px;
 	font-weight:bold;
-	height:20px;
-	line-height: 20px;
+	height:21px;
+	line-height: 21px;
 	cursor: move;
-	padding-top:5px;
 	/* margin-bottom:2px; */
-	width:100%;
+	/* width:300px; */
+}
+
+.title-button {
+	position: absolute;
+	transform: scale(0.4,0.4);
+}
+
+.title-button-container {
+	position:relative;
+	float:right;
+	padding:2px;
+	cursor:pointer;
+	top:-9px;
+	right:27px;
+}
+
+.item-born {
+	position:relative;
+	bottom:12px;
+	right:2px;
+	float:right;
+	cursor:none;
+	font-size:4pt;
+	font-style:italic;
+	color:lightgrey;
+}
+
+.item-title {
+	float:left;
+	width:80%;
+	padding-left:6px;
+	cursor:text;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 /*
 .box {
@@ -28,12 +61,13 @@ a {
 }
 */
 table.item-blocks-table {
+	background:grey;
 	border-collapse: collapse ;
-	border-spacing:5px;
-	padding-left:5px;
-	padding-right:5px;
 	vertical-align:top;
-	width:100%;
+}
+
+img {
+	width:90%;
 }
 
 
@@ -42,17 +76,18 @@ table.item-blocks-table {
 }
 
 .block-icon {
+	transform:scale(0.5);
 	position:relative;
-	top:-3px;
-	max-width:15px;
-	min-width:15px;
-	width:15px;
-	left:-3px;
+	top:-5px;
+	max-width:8px;
+	min-width:8px;
+	left:-4px;
+	vertical-align:top;
 }
 
 .checkbox {
 	position:relative;
-	right:4px !important;
+	/* right:4px !important; */
 }
 
 .block-datetime {
@@ -86,30 +121,38 @@ table.item-blocks-table {
 	position:relative;
 	height:214px;
 	top:-233px;
-	width:24%;
+	width:15%;
 	border-right-style:solid;
 	border-right-width:20px;
 	border-right-color:#003e80;
 	z-index:-1;
 	background:#F5F5F5;
+	font-size:7pt;
+}
+
+.item {
+	margin:6px;
+	max-width:240px;
+	max-height:140px;
+	border:black 1px solid;
 }
 
 .item-content-wrapper {
 	position:relative;
 	overflow-y:scroll;
-	height:214px;
-	width:405px;
+	height:117px;
+	width:100%;
 	top:-19px;
 }
 
 .block-tags {
 	vertical-align:top;
-	width:25%;
+	width:15%;
 	text-align:right;
 	font-weight:bold;
-	font-size:10pt;
+	font-size:6pt;
 	font-family:serif;
-	padding-right:8px;
+	padding-right:5px;
 	padding-bottom:5px;
 }
 
@@ -120,53 +163,21 @@ table.item-blocks-table {
 	padding-left:1px;
 	padding-bottom:5px;
 	font-family:sans-serif;
-	font-size:10pt;
+	font-size:7pt;
+	width:
 }
 
 .block-note a:visited {
 	color:#003e80;
 }
 
-.title-button {
-	position: absolute;
-	transform: scale(0.5,0.5);
-}
-
-.title-button-container {
-	position:relative;
-	float:right;
-	padding:2px;
-	cursor:pointer;
-	top:-13px;
-	right:27px;
-}
-
-.item-born {
-	position:relative;
-	bottom:15px;
-	right:2px;
-	float:right;
-	cursor:none;
-	font-size:6pt;
-	font-style:italic;
-	color:grey;
-}
-
-.item-title {
-	float:left;
-	width:80%;
-	padding-left:6px;
-	cursor:text;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 
 .internal-table {
 	table-layout: fixed;
 	width:100%;
 	border-collapse:collapse;
 	vertical-align:top;
+	font-size:5pt;
 }
 
 .internal-table td {
@@ -185,13 +196,6 @@ table.item-blocks-table {
 	background:black !important;
 	font-size:4pt;
 	font-weight:bold;
-}
-
-.item {
-	margin:6px;
-	max-width:400px;
-	max-height:240px;
-	border:grey 3px solid;
 }
 
 table.item-blocks-table tr:hover {
@@ -226,11 +230,11 @@ a:link {
 	font-family:sans-serif;
 	font-weight:bold;
 	padding-bottom:5px;
-	background:#003e80;
+	/* background:#003e80; */
 	color:#DAECFF;
 	cursor:pointer;
 	width:13px;
-	font-size:75%;
+	font-size:50%;
 }
 
 .block-link a:visited {

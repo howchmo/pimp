@@ -205,7 +205,7 @@ function makeItem(id)
 	$itemBlocksTable.append($itemBlocksTableBody);
 	$itemContentWrapper.append($itemBlocksTable);
 	$item.append($itemContentWrapper);
-	$item.append($leftColumn);
+	// $item.append($leftColumn);
 	
 	return $item;
 }
@@ -218,9 +218,15 @@ function getLink( block )
 	{
 		var n = str.lastIndexOf("](");
 		var link = str.substring(n+3, str.length-1);
-		//block.link = "<a class=\"icon-link\" href=\"#\" item=\"+block+\" onclick=\"onBlockClick('"+block.id+", "+link+"');\">&#9654;</a>";
-		block.link = "<a class=\"icon-link\" href=\"#\" item=\""+link+"\" onclick=\"onBlockClick(event);\">&#9654;</a>";
-		block.text = str.substring(1, n);
+		if( link.startsWith("ttp://") || link.startsWith("ttps://") )
+		{
+			block.icon = '<a href="#" class="icon-link" onclick="window.open(\'h'+link+'\')">&#9654;</a>';
+		}
+		else
+		{
+			block.link = "<a class=\"icon-link\" href=\"#\" item=\""+link+"\" onclick=\"onBlockClick(event);\">&#9654;</a>";
+			block.text = str.substring(1, n);
+		}
 	}
 	// is it just a link (copy and pasted during research for example)
 	else if( str.startsWith("http://") || str.startsWith("https://") )
