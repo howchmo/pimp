@@ -236,7 +236,7 @@ function getLink( block )
 	// if it isn't link but it is not empty make it a button
 	// that will generate a new item linked to that block
 	else if( str.length > 0 )
-		block.link="&#9608;";
+		block.link = "<a class=\"icon-link\" onclick=\"createLinkedItem( $(this) );\">&#9608;</a>";
 	// else pad it with blanks so the column at least shows up
 	else
 	{
@@ -359,6 +359,7 @@ function extractTextFromLink( str )
 {
 	return((str.split(">")[1]).split("<")[0]);
 }
+
 /*
 function checkBox( blockIdx )
 {
@@ -394,6 +395,7 @@ function populate(item)
 	else
 		$(itemId+" .item-title").html(item.title);
 	$(itemId+" .item-born").html(item.born);
+	var $block;
 	for( var i = 0; i < item.doc.length; i++ )
 	{
 		for( var key in item.doc[i] )
@@ -406,17 +408,17 @@ function populate(item)
 				"datetime":val.born,
 				"id":itemId
 			};
-			var $block = makeBlock();
+			$block = makeBlock();
 			blockData = deriveBlockData(blockData);
 			renderBlock( $block, blockData);
 			var itemBody = $(itemId+" .item-blocks-table-body");
 			itemBody.append($block);
 		}
 	}
-	//if( item.doc.length == 0 )
-	//	addNewRow(0, "", "", "");
+	if( item.doc.length == 0 )
+		$(itemId+" .item-blocks-table-body").append(makeBlock());
 	// Put the cursor at the end of the note
-	//$(".right-text-block[block="+i+"]").focus();
+	$block.find(".block-note").focus();
 }
 
 function getCaretCharacterOffsetWithin(element)
@@ -449,6 +451,7 @@ function setEndOfContenteditable(contentEditableElement)
 {
 	var range,selection;
 	if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+
 	{
 		range = document.createRange();//Create a range (a range is a like the selection but invisible)
 		range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
@@ -482,11 +485,12 @@ function setSelectionRange(aNode, aOffset)
 	sel.addRange(range);
 }
 
-function jsonifyItem()
+function jsonifyItem( item )
 {
+	var itemid = "#"+item.attr("id");
 	var first_time_thru = false;
 	var jitem = {}
-	var title_text = $(".item-title").html();
+	var title_text = $(itemid+" .item-title").html();
 	if( title_text != "" )
 	{
 		jitem["title"] = title_text;
@@ -497,21 +501,17 @@ function jsonifyItem()
 	}
 	jitem["born"] = new Date();
 	jitem["doc"] = [];
-	$(".item-blocks-table-body").children("tr").each(function() {
-		var key = $(this).find(".left-text-block").text();
-		var $rightTextBlock = $(this).find(".right-text-block");
-		value = $rightTextBlock.attr("source");
+	$(itemid+" .item-blocks-table-body").children("tr").each(function() {
+	  var blockdata = JSON.parse($(this).attr("block-data"));
+		var key = blockdata.tags;
+		var value = blockdata.source;	
 		if( first_time_thru )
 		{
 			first_time_thru = false;
 			jitem["title"] = value;
 		}
-		var $rightIconBlock = $(this).find(".date-time-block");
-		var itemBorn = $rightIconBlock.attr("born");
-		//if( $rightTextBlock.attr("link") != null )
-		//{
-			value = {"text": value, "born": itemBorn};
-		//}
+		var itemBorn = blockdata.datetime;
+		value = {"text": value, "born": itemBorn};
 		var obj = {};
 		obj[key] = value;
 		jitem["doc"].push(obj);
@@ -585,7 +585,7 @@ function start()
 	});
 
 	// ENTER and BACKSPACE
-	$(document).keypress( function(e)
+	$(document).keydown( function(e)
 	{
 		var f = $(":focus");
 		var blockClass = f.attr("class");
@@ -613,6 +613,8 @@ function start()
 				p.after(renderBlock(makeBlock(), deriveBlockData({"source":source, "tags":tags})));
 				p.next("tr").children("."+blockClass).focus();
 			}
+			var item = p.parents("div[class='item']");
+			saveItem(item);
 		}
 		else if( e.which == 8  && pos == 0 ) // BACKSPACE
 		{
@@ -627,36 +629,16 @@ function start()
 				f.text("");
 			prevBlock.blur();
 			prevBlock.focus();
+			var item = prev.parents("div[class='item']");
+			saveItem(item);
 		}
 	});
 }
-/*
-function ajaxLoad(uri, callback) {
-	console.log("ajaxLoad('"+uri+"')");
-	var request = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-	request.onreadystatechange = callback;
-	request.open("GET", uri);
-	request.send(null);
-}
 
-function ajaxOnResult(evt) {
-	if ((evt.currentTarget.readyState == 4) && (evt.currentTarget.status == 200 || evt.currentTarget.status == 0))
-	{
-		var item = JSON.parse(evt.currentTarget.responseText);
-		console.log(JSON.stringify(item));
-		populate(item);
-	}
-	else
-	{
-		console.log("HTTP status: "+evt.currentTarget.status);
-	}
-}
-*/
-
-function saveItem() {
-	var str = JSON.stringify(jsonifyItem(), function(key, value) { return value === "" ? "" : value });
-	console.log("saveItem("+itemId+")")
-	// console.log("	"+str);
+function saveItem( item ) {
+	var str = JSON.stringify(jsonifyItem( item ), function(key, value) { return value === "" ? "" : value });
+	var itemId = item.attr("id");
+	console.log("saveItem(\""+itemId+"\")")
 	if( itemId == "" )
 	{
 		$.post("pimp/", {"string":str}, function(data) {
@@ -672,38 +654,43 @@ function saveItem() {
 			contentType: "application/json",
 			data:JSON.stringify({"string":str}),
     	dataType: "json",
-			success: function(data) {
-				//window.location.href = '#'+data._id;
-				//window.location.reload();
-			}
-		})
+			success: function(data) { }
+		});
 	}
 }
 
-/*
+
 function createLinkedItem( rightIcon ) {
-	var $rightTextBlock = rightIcon.parent().parent().find(".right-text-block");
-	var text = $rightTextBlock.text();
+	var block = rightIcon.parent().parent();
+	var tags = block.find(".block-tags").text();
+	var blocknote = rightIcon.parent().parent().find(".block-note");
+	var text = blocknote.text();
 	if( text == "" )
 	{
-		$rightTextBlock.text(" ");
+		blocknote.text(" ");
 		text = " ";
 	}
-		var li = {};
-		li["title"] = text;
-		li["born"] = new Date();
-		li["doc"] = [{"":""}];
-		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
-		$.post("pimp/", {"string":si}, function(data)
-		{
-			var link = "#"+data;
-			var source = "["+text+"]("+link+")";
-			$rightTextBlock.attr("link", link);
-			$rightTextBlock.attr("source", source);
-			$rightTextBlock.html(toHtml(source));
-			rightIcon.prop("onclick", null);
-			rightIcon.html("<a target='_blank' href='"+link+"'>&#9654;</a>");
-			window.open(link);
-		});
+	// Create a new item in the database that is blank
+	var li = {};
+	li["title"] = text;
+	li["born"] = new Date();
+	li["doc"] = [{"":{ "text":"" }}];
+	var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
+	$.post("pimp/", {"string":si}, function(data)
+	{
+		// With the new link returned from the database change the block to a linked block
+		var link = "#"+data;
+		var source = "["+text+"]("+link+")";
+		var blockData = {
+			"tags":tags,
+			"source":source,
+			"datetime":li["born"],
+			"id":data
+		};
+		blockData = deriveBlockData(blockData);
+		renderBlock( block, blockData);
+		var e = {};
+		e.target = block.find(".icon-link")[0];
+		onBlockClick(e);
+	});
 }
-*/
