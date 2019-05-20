@@ -10,7 +10,7 @@
 	{
 		var returnStr = escape(s)
 			.replace(/!\[([^\]]*)]\(([^(]+)\)/g, '<img alt="$1" src="$2">')
-			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '<span href="$2" class="link">$1</span>')
+			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '<a href="$2" class="link" onmousedown="linkClick(\'$2\');">$1</a>')
 			.replace(/<a /g, '<a class="link" ')
 			.replace(/ \| /g, '</td><td>')
 			.replace(/`([^`]+)`/g, '<code>$1</code>')

@@ -18,5 +18,6 @@ app.post('/pimp', pimp.addItem);
 app.put('/pimp/:id', pimp.updateItem);
 app.delete('/pimp/:id', pimp.deleteItem);
 
-console.log('Listening on port 3000...');
-app.listen(3000);
+var port = 7137;
+console.log('Listening on port '+port+'...');
+app.listen(port);

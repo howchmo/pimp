@@ -344,10 +344,9 @@ function makeBlock()
 	return $newBlock;
 }
 
-function linkClick()
+function linkClick( url )
 {
-	alert("this");
-	window.open($(this).attr("href"));
+	window.open(url);
 }
 
 function extractHrefFromLink( str )
