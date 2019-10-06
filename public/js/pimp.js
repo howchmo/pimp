@@ -1,5 +1,7 @@
 $(document).ready(start());
 
+var dirty = false;
+
 var items = {};
 
 function pruneBlock(id)
@@ -533,6 +535,18 @@ function generateDatetimeHtml( datetime )
 	return(str);
 }
 
+function saveItemIfDirty( p )
+{
+	console.log("dirty? "+dirty);
+	if( dirty )
+	{
+		var item = p.parents("div[class='item']");
+		saveItem(item);
+		dirty = false;
+	}
+	console.log("dirty? "+dirty);
+}
+
 function start()
 {
 	$(function() { //DOM Ready
@@ -557,11 +571,13 @@ function start()
 		{
 			e.preventDefault();
 			p.prev("tr").children("."+blockClass).focus();
+			saveItemIfDirty(p);
 		}
 		else if( e.which == 40 ) // DOWN
 		{
 			e.preventDefault();
 			p.next("tr").children("."+blockClass).focus();
+			saveItemIfDirty(p);
 		}
 		else if( e.which == 37 ) // LEFT
 		{
@@ -571,6 +587,7 @@ function start()
 				e.preventDefault();
 				p.children(".block-tags").focus();
 			}
+			saveItemIfDirty(p);
 		}
 		else if( e.which == 39 ) // RIGHT
 		{
@@ -580,6 +597,15 @@ function start()
 				e.preventDefault();
 				p.find(".block-note").focus();
 			}
+			saveItemIfDirty(p);
+		}
+		else if( e.which == 9 ) // TAB
+		{
+			saveItemIfDirty(p);
+		}
+		else
+		{
+			dirty = true;
 		}
 	});
 
@@ -657,7 +683,6 @@ function saveItem( item ) {
 		});
 	}
 }
-
 
 function createLinkedItem( rightIcon ) {
 	var block = rightIcon.parent().parent();
