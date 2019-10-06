@@ -64,6 +64,7 @@ exports.addItem = function(req, res)
 exports.updateItem = function(req, res)
 {
 	var id = req.params.id;
+	console.log(req.body["string"]);
 	var item = JSON.parse(req.body["string"]);
 	console.log("Update item: " +id + " : "+ JSON.stringify(item));
 	db.collection('items').updateOne({'_id':ObjectID(id)}, item, {safe:true},

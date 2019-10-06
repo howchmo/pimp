@@ -18,6 +18,6 @@ app.post('/pimp', pimp.addItem);
 app.put('/pimp/:id', pimp.updateItem);
 app.delete('/pimp/:id', pimp.deleteItem);
 
-var port = 7137;
+var port = 80;
 console.log('Listening on port '+port+'...');
 app.listen(port);

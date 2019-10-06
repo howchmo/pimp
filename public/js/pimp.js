@@ -691,5 +691,7 @@ function createLinkedItem( rightIcon ) {
 		var e = {};
 		e.target = block.find(".icon-link")[0];
 		onBlockClick(e);
+		var item = block.parents("div[class='item']");
+		saveItem(item);
 	});
 }
