@@ -646,6 +646,8 @@ function start()
 			var prev = p.prev("tr");
 			var prevBlockData = JSON.parse(prev.attr("block-data"));
 			var prevText = prevBlockData.source+text;
+			if( blockClass == "block-tags" )
+				prevText = prevBlockData.tags+text;
 			var prevBlock = prev.children("."+blockClass);
 			prevBlock.text(prevText);
 			if( c.text() == "" )
