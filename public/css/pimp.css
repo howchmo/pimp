@@ -19,27 +19,33 @@ a {
 }
 
 .title-button {
-	position:absolute;
-	transform: scale(0.4,0.4);
+	position:relative;
 	float:right;
-	right:1px;
-	top:1px;
+	padding-left:10px;
+	padding-right:10px;
+	border:1px black solid;
+	background-color:white;
+	margin:1px;
+	font-size:150%;
+}
+
+.problem-button {
+	top:21px;
 }
 
 .title-button-container {
 	position:relative;
-	float:right;
-	padding:2px;
-	cursor:pointer;
-	top:-7px;
-	right:-7px;
+	top:-10px;
+	right:-72px;
+	transform: scale(0.4,0.4);
+	height:2px;
 }
 
 .item-born {
 	position:relative;
 	float:right;
 	bottom:12px;
-	right:2px;
+	right:-95px;
 	cursor:none;
 	font-size:4pt;
 	font-style:italic;
@@ -81,18 +87,44 @@ img {
 }
 
 .block-icon {
-	transform:scale(0.5);
-	position:relative;
-	top:-5px;
 	max-width:8px;
 	min-width:8px;
-	left:-4px;
 	vertical-align:top;
+}
+
+.icon-link {
+	position:relative;
+	font-size:50%
+}
+
+.block-icon:hover {
+	background: 
+	radial-gradient(black 15%, transparent 16%) 0 0,
+	radial-gradient(black 15%, transparent 16%) 8px 8px,
+	radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+	radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+	background-color:#282828;
+	background-size:16px 16px;
 }
 
 .checkbox {
 	position:relative;
-	/* right:4px !important; */
+	right:70%;
+	top:70%;
+}
+
+.block-note-bullet {
+	margin-left:1px;
+}
+
+.block-note-bullet-content {
+	margin-top:-12px;
+	margin-left:8px;
+}
+
+.bullet {
+	font-size:50%;
+	transform:scale(0.5);
 }
 
 .block-datetime {
@@ -147,7 +179,7 @@ img {
 	overflow-y:scroll;
 	height:117px;
 	width:100%;
-	top:-19px;
+	top:-23px;
 }
 
 .block-tags {
@@ -178,7 +210,6 @@ img {
 .block-note a:visited {
 	color:#003e80;
 }
-
 
 .internal-table {
 	table-layout: fixed;
@@ -242,7 +273,6 @@ a:link {
 	color:#DAECFF;
 	cursor:pointer;
 	width:13px;
-	font-size:50%;
 }
 
 .block-link a:visited {

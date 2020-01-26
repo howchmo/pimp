@@ -176,11 +176,11 @@ function rowToLeftIsNotEmpty( x, y )
 }
 
 var icons = {
-	"+":"<span class='checkbox'><input type='checkbox' checked></input></span>",
-	"-":"<span class='checkbox'><input type='checkbox'></input></span>",
-	"%":"&#128338;",
-	"!":"&#128161;",
-	"?":"&#0;"
+	"+":"<span class='checkbox checked'><input type='checkbox' checked></input></span>",
+	"-":"<span class='checkbox unchecked'><input type='checkbox'></input></span>",
+	"%":"<span class='clock-icon bullet'>&#128338;</span>",
+	"!":"<span class='idea-icon bullet'>&#128161;</span>",
+	"?":"<span class='question-icon bullet'>&#0;</span>"
 };
 
 function makeItem(id)
@@ -189,7 +189,9 @@ function makeItem(id)
 	var $itemHeader = $('<div/>', {'class':'item-header'});
 	var $itemTitle = $('<span/>', {'class':'item-title', 'contenteditable':'true', 'html':'&nbsp;'});
 	var $headerButtonContainer = $('<div/>', {'class':'title-button-container'});
-	var $closeButton = $('<button/>', {'class':'title-button','text':'x'});
+	var $printButton = $('<span/>', {'class':'title-button','text':'>'});
+	var $expandButton = $('<span/>', {'class':'title-button','text':'^'});
+	var $closeButton = $('<span/>', {'class':'title-button problem-button','text':'X'});
 	var $itemBorn = $('<div/>', {'class':'item-born'});
 	var $itemContentWrapper = $('<div/>', {'class':'item-content-wrapper'});
 	var $itemBlocksTable = $('<table/>', {'class':'item-blocks-table'});
@@ -200,7 +202,15 @@ function makeItem(id)
 	$closeButton.click(function() {
 		pruneBlock(id);
 	});
+	$printButton.click(function() {
+		window.open("print.html#"+id);
+	});
+	$expandButton.click(function() {
+		window.open("index.html#"+id);
+	});
 	$headerButtonContainer.append($closeButton);
+	$headerButtonContainer.append($expandButton);
+	$headerButtonContainer.append($printButton);
 	$itemHeader.append($headerButtonContainer);
 	$itemHeader.append($itemBorn);
 	$item.append($itemHeader);
@@ -222,27 +232,27 @@ function getLink( block )
 		var link = str.substring(n+3, str.length-1);
 		if( link.startsWith("ttp://") || link.startsWith("ttps://") )
 		{
-			block.icon = '<a href="#" class="icon-link" onclick="window.open(\'h'+link+'\')">&#9654;</a>';
+			block.icon = '<div class="icon-link"><a href="#" onclick="window.open(\'h'+link+'\')">&#9654;</a></div>';
 		}
 		else
 		{
-			block.link = "<a class=\"icon-link\" href=\"#\" item=\""+link+"\" onclick=\"onBlockClick(event);\">&#9654;</a>";
+			block.link = "<div class=\"icon-link\"><a href=\"#\" item=\""+link+"\" onclick=\"onBlockClick(event);\">&#9654;</a></div>";
 			block.text = str.substring(1, n);
 		}
 	}
 	// is it just a link (copy and pasted during research for example)
 	else if( str.startsWith("http://") || str.startsWith("https://") )
 	{
-		block.icon = '<a href="#" class="icon-link" onclick="window.open(\''+str+'\')">&#9654;</a>';
+		block.icon = '<div class="icon-link"><a href="#" onclick="window.open(\''+str+'\')">&#9654;</a></div>';
 	}
 	// if it isn't link but it is not empty make it a button
 	// that will generate a new item linked to that block
 	else if( str.length > 0 )
-		block.link = "<a class=\"icon-link\" onclick=\"createLinkedItem( $(this) );\">&#9608;</a>";
+		block.link = "<div class=\"icon-link\"><a onclick=\"createLinkedItem( $(this) );\">&#9608;</a></div>";
 	// else pad it with blanks so the column at least shows up
 	else
 	{
-		block.link="&nbsp;&nbsp;&nbsp;";
+		block.link="<div class='icon-link'>&nbsp;</div>";
 		block.datetime=undefined;
 	}
 	return block;
@@ -687,9 +697,9 @@ function saveItem( item ) {
 }
 
 function createLinkedItem( rightIcon ) {
-	var block = rightIcon.parent().parent();
+	var block = rightIcon.parent().parent().parent();
 	var tags = block.find(".block-tags").text();
-	var blocknote = rightIcon.parent().parent().find(".block-note");
+	var blocknote = block.find(".block-note");
 	var text = blocknote.text();
 	if( text == "" )
 	{
@@ -716,7 +726,7 @@ function createLinkedItem( rightIcon ) {
 		blockData = deriveBlockData(blockData);
 		renderBlock( block, blockData);
 		var e = {};
-		e.target = block.find(".icon-link")[0];
+		e.target = block.find(".icon-link a:first-child");
 		onBlockClick(e);
 		var item = block.parents("div[class='item']");
 		saveItem(item);

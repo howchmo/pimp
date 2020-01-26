@@ -12,7 +12,7 @@
 			.replace(/!\[([^\]]*)]\(([^(]+)\)/g, '<img alt="$1" src="$2">')
 			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '<a href="$2" class="link" onmousedown="linkClick(\'$2\');">$1</a>')
 			.replace(/<a /g, '<a class="link" ')
-			.replace(/ \| /g, '</td><td>')
+			.replace(/ \|\| /g, '</td><td>')
 			.replace(/`([^`]+)`/g, '<code>$1</code>')
 			.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
 			.replace(/\*([^*]+)\*/g, '<em>$1</em>')
@@ -29,10 +29,10 @@
 		f=b[0];
 		R=
 		{
-			'*':[/\n\* /,'<li>','</li>'],
+			'*':[/\n\* /,'<div class="block-note-bullet">&bull;<div class="block-note-bullet-content">','</div></div>'],
 			// '1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
-			' ':[/\n    /,'<pre><code>','</pre></code>','\n'],
-			'>':[/\n> /,'<blockquote>','</blockquote>','\n'],
+			' ':[/\n    /,'<pre><code>','</pre></code>',''],
+			'>':[/\n> /,'<blockquote>','</blockquote>',''],
 //			'+':[/\n\+ /,'<input type="checkbox">',''],
 //			'-':[/\n\- /,'<input type="checkbox" checked>',''],
 			'-':[/\n\- /,'&#9744;&nbsp;',''],
