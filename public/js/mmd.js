@@ -49,7 +49,7 @@
 				.slice(1)
 				.map(R[3]?escape:inlineEscape)
 				.join(R[3]||'</li>\n<li>')+R[2]:
-			f=='#'?'<h'+(f=b.indexOf(' '))+'>'+inlineEscape(b.slice(f+1))+'</h'+f+'>':
+			f=='#'?'<span class="heading'+(f=b.indexOf(' '))+'">'+inlineEscape(b.slice(f+1))+'</span>':
 			f=='<'?b:
 			''+inlineEscape(b)+'';
 	});

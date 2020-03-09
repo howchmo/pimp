@@ -7,6 +7,12 @@ a {
 	text-decoration:none;
 }
 
+.table-items-td {
+	height:240px;
+	width:240px;
+/*	border: solid 1px red; */
+}
+
 .item-header {
 	background:grey;
 	font-size:10px;
@@ -108,9 +114,7 @@ img {
 }
 
 .checkbox {
-	position:relative;
-	right:70%;
-	top:70%;
+	transform: scale(0.5) translate(-100%,-50%);
 }
 
 .block-note-bullet {
@@ -170,14 +174,14 @@ img {
 .item {
 	margin:6px;
 	max-width:240px;
-	max-height:140px;
+	height:240px;
 	border:black 1px solid;
 }
 
 .item-content-wrapper {
 	position:relative;
 	overflow-y:scroll;
-	height:117px;
+	height:217px;
 	width:100%;
 	top:-23px;
 }
@@ -279,3 +283,32 @@ a:link {
 	color:#66b0ff;
 }
 
+.heading1 {
+	font-size:150%;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.heading2 {
+	font-size:130%;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.heading3 {
+	font-size:110%;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.heading4 {
+	font-size:105%;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.heading5 {
+	font-size:100%;
+	font-weight:bold;
+	text-decoration:underline;
+}

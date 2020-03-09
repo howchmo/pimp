@@ -176,8 +176,8 @@ function rowToLeftIsNotEmpty( x, y )
 }
 
 var icons = {
-	"+":"<span class='checkbox checked'><input type='checkbox' checked></input></span>",
-	"-":"<span class='checkbox unchecked'><input type='checkbox'></input></span>",
+	"+":"<div class='checkbox checked'><input type='checkbox' checked></input></div>",
+	"-":"<div class='checkbox unchecked'><input type='checkbox'></input></div>",
 	"%":"<span class='clock-icon bullet'>&#128338;</span>",
 	"!":"<span class='idea-icon bullet'>&#128161;</span>",
 	"?":"<span class='question-icon bullet'>&#0;</span>"
