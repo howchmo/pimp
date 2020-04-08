@@ -312,3 +312,18 @@ a:link {
 	font-weight:bold;
 	text-decoration:underline;
 }
+
+.indented {
+	margin-left:5%;
+}
+
+.blockquoted {
+	margin:2%;
+	padding:2%;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+	font-size:90%;
+	font-family: serif;
+
+}
