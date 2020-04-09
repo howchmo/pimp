@@ -176,8 +176,8 @@ function rowToLeftIsNotEmpty( x, y )
 }
 
 var icons = {
-	"+":"<div class='checkbox checked'><input type='checkbox' checked></input></div>",
-	"-":"<div class='checkbox unchecked'><input type='checkbox'></input></div>",
+	"+":"<div class='checkbox checked'><input type='checkbox' checked onclick='checkBox(this); return false;'></input></div>",
+	"-":"<div class='checkbox unchecked'><input type='checkbox' onclick='checkBox(this); return false;'></input></div>",
 	"%":"<span class='clock-icon bullet'>&#128338;</span>",
 	"!":"<span class='idea-icon bullet'>&#128161;</span>",
 	"?":"<span class='question-icon bullet'>&#0;</span>"
@@ -318,6 +318,7 @@ function makeBlock()
 	{
 		var block = JSON.parse($(this).parent().attr("block-data"));
 		block.source = $(this).text();
+		block.icon = deriveIcon(block.source);
 		if( block.source != "" && block.datetime == undefined )
 			block.datetime = Date.now();
 		renderBlock($(this).parent(), deriveBlockData(block));
@@ -371,22 +372,40 @@ function extractTextFromLink( str )
 	return((str.split(">")[1]).split("<")[0]);
 }
 
-/*
-function checkBox( blockIdx )
+function deriveIcon( noteText  )
 {
-	var textBlock = $(".right-text-block[block="+blockIdx+"]");
-	var src = textBlock.attr("source");
+	var index = 0;
+	if( noteText.startsWith("[") )
+		index = 1;
+	var icon = icons[noteText[index]];
+	if( icon == undefined )
+		return "";
+	return icon;
+}
+
+function checkBox( input ) // blockIdx )
+{
+	var textBlock = $(input).parents("tr[class='block']");
+	var blockdata = JSON.parse(textBlock.attr("block-data"));
+	var src = blockdata.source;	
 	var index = 0;
 	if( src.startsWith("[") )
 		index = 1;
 	if( src[index] == "-" )
+	{
 		src = src.substr(0,index)+"+"+src.substr(index+1);
+		blockdata.icon = icons["+"];
+	}
 	else
+	{
 		src = src.substr(0,index)+"-"+src.substr(index+1);
-	textBlock.attr("source", src);
-	textBlock.html(renderHtml(src, blockIdx));
+		blockdata.icon = icons["-"];
+	}
+	blockdata.source = src;
+	//textBlock.attr("block-data", JSON.stringify(blockdata)); 
+	renderBlock(textBlock, blockdata);
 }
-*/
+
 
 function createFirstItem(id)
 {
@@ -547,14 +566,12 @@ function generateDatetimeHtml( datetime )
 
 function saveItemIfDirty( p )
 {
-	console.log("dirty? "+dirty);
 	if( dirty )
 	{
 		var item = p.parents("div[class='item']");
 		saveItem(item);
 		dirty = false;
 	}
-	console.log("dirty? "+dirty);
 }
 
 function start()
@@ -645,6 +662,9 @@ function start()
 					tags = newStr;
 				else
 					source = newStr;
+				block_data = JSON.parse(p.attr("block-data"));
+				block_data.icon = "";
+				p.attr("block-data", JSON.stringify(block_data));
 				p.after(renderBlock(makeBlock(), deriveBlockData({"source":source, "tags":tags})));
 				p.next("tr").children("."+blockClass).focus();
 			}
