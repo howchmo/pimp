@@ -53,7 +53,17 @@ function printItem( item )
 			var line = item.doc[i][key].text;
 			if( line != undefined )
 			{
-				if( line.startsWith("[") )
+				if( line.startsWith("[!") )
+				{
+					var parsed = line.split("](");
+					var text = parsed[0].substring(3);
+					var imgUrl = parsed[1].slice(0,-1);
+					var url = parsed[2].slice(0,-1);
+					if( text != "" )
+						text+=" - ";
+					p += "<dd><img height=200 src=\""+imgUrl+"\"></img> ("+text+"<a href=\""+url+"\">"+url+"</a>)</dd>"
+				}
+				else if( line.startsWith("[") )
 				{
 					var parsed = line.split("](");
 					var text = parsed[0].substring(1);
@@ -78,7 +88,7 @@ function printItem( item )
 				{
 					p += "<dd><a href=\""+line+"\">"+line+"</a></dd>";
 				}
-				else if( line.startsWith("!") )
+				else if( line.startsWith("![") )
 				{
 					var parsed = line.split("](");
 					var text = parsed[0].substring(1);

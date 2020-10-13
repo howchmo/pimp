@@ -74,50 +74,53 @@ function onBlockClick( e )
 	var newId = $(e.target).attr("item");	
 	var $item = $(e.target).parents(".item");
 	var id = $item.attr("id");
-	var $cell = $item.parent();
-	var $table = $("#table-items");
-	var x = $cell.index();
-	var y = $cell.parent().index();
-	var newx = x+1;
-	var newy = y;
-	if(items[id].children.length > 0 )
+	if( !items[id]["children"].includes(newId) )
 	{
-		var lastChildId = items[id].children[items[id].children.length-1];
-		while( $table[0].rows[newy].cells[newx].children[0].getAttribute('id') != lastChildId )
+		var $cell = $item.parent();
+		var $table = $("#table-items");
+		var x = $cell.index();
+		var y = $cell.parent().index();
+		var newx = x+1;
+		var newy = y;
+		if(items[id].children.length > 0 )
 		{
+			var lastChildId = items[id].children[items[id].children.length-1];
+			while( $table[0].rows[newy].cells[newx].children[0].getAttribute('id') != lastChildId )
+			{
+				newy++;
+			}
 			newy++;
+			while( rowToRightIsNotEmpty(newx, newy ) )
+			{
+				newy++;
+			}
 		}
-		newy++;
-		while( rowToRightIsNotEmpty(newx, newy ) )
+		var newCell = null;
+		if( y < newy && rowToLeftIsNotEmpty(newx, newy) )
 		{
-			newy++;
+			var newRow = $table[0].insertRow(newy);
+			for( var i=0; i<newx; i++ )
+			{
+				newRow.insertCell(i);
+			}
+			newCell = newRow.insertCell(newx);
+	
+			for( var i=newx+1; i<document.getElementsByTagName("table")[0].rows[y].length; i++ )
+				newRow.insertCell(i);
 		}
-	}
-	var newCell = null;
-	if( y < newy && rowToLeftIsNotEmpty(newx, newy) )
-	{
-		var newRow = $table[0].insertRow(newy);
-		for( var i=0; i<newx; i++ )
+		else
 		{
-			newRow.insertCell(i);
+			newCell = getTableCell(newx, newy);
 		}
-		newCell = newRow.insertCell(newx);
-
-		for( var i=newx+1; i<document.getElementsByTagName("table")[0].rows[y].length; i++ )
-			newRow.insertCell(i);
+	
+		var $newItem = makeItem(newId);
+		$(newCell).append($newItem);
+		$.get("pimp/"+newId, function(data) {
+			populate(data);
+		});
+		items[id]["children"].push(newId);
+		items[newId] = {"children":[],"parent":id};
 	}
-	else
-	{
-		newCell = getTableCell(newx, newy);
-	}
-
-	var $newItem = makeItem(newId);
-	$(newCell).append($newItem);
-	$.get("pimp/"+newId, function(data) {
-		populate(data);
-	});
-	items[id]["children"].push(newId);
-	items[newId] = {"children":[],"parent":id};
 }
 
 function getTableCell( x, y )
@@ -574,6 +577,8 @@ function saveItemIfDirty( p )
 	}
 }
 
+
+
 function start()
 {
 	$(function() { //DOM Ready
@@ -662,11 +667,25 @@ function start()
 					tags = newStr;
 				else
 					source = newStr;
-				block_data = JSON.parse(p.attr("block-data"));
-				block_data.icon = "";
-				p.attr("block-data", JSON.stringify(block_data));
-				p.after(renderBlock(makeBlock(), deriveBlockData({"source":source, "tags":tags})));
-				p.next("tr").children("."+blockClass).focus();
+				if( oldStr.includes("\n") )
+				{
+					for( src of oldStr.split("\n") )
+					{
+						block_data = JSON.parse(p.attr("block-data"));
+						block_data.icon = "";
+						p.attr("block-data", JSON.stringify(block_data));
+						p.after(renderBlock(makeBlock(), deriveBlockData({"source":src, "tags":tags})));
+						p.next("tr").children("."+blockClass).focus();
+					}
+				}
+				else
+				{
+					block_data = JSON.parse(p.attr("block-data"));
+					block_data.icon = "";
+					p.attr("block-data", JSON.stringify(block_data));
+					p.after(renderBlock(makeBlock(), deriveBlockData({"source":source, "tags":tags})));
+					p.next("tr").children("."+blockClass).focus();
+				}
 			}
 			var item = p.parents("div[class='item']");
 			saveItem(item);
