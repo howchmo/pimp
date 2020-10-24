@@ -88,6 +88,9 @@ function onBlockClick( e )
 			while( $table[0].rows[newy].cells[newx].children[0].getAttribute('id') != lastChildId )
 			{
 				newy++;
+				// Handle the case of blanks
+				while( $table[0].rows[newy].cells[newx].children.length == 0 )
+					newy++;
 			}
 			newy++;
 			while( rowToRightIsNotEmpty(newx, newy ) )
