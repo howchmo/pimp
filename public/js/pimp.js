@@ -670,9 +670,9 @@ function start()
 					tags = newStr;
 				else
 					source = newStr;
-				if( oldStr.includes("\n") )
+				if( oldStr.includes("|") )
 				{
-					for( src of oldStr.split("\n") )
+					for( src of oldStr.split("|").reverse() )
 					{
 						block_data = JSON.parse(p.attr("block-data"));
 						block_data.icon = "";
@@ -680,6 +680,7 @@ function start()
 						p.after(renderBlock(makeBlock(), deriveBlockData({"source":src, "tags":tags})));
 						p.next("tr").children("."+blockClass).focus();
 					}
+					p.remove();
 				}
 				else
 				{
