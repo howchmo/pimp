@@ -654,10 +654,15 @@ function start()
 		if( blockClass == "block-tags" )
 			c = p.children(".block-note");
 		var pos = getCaretCharacterOffsetWithin(f[0]);
-		var text = f.text();
+		var text = f[0].innerText; //.text();
 		var end = text.length;
 		var oldStr = text.substring(0,pos);
 		var newStr = text.substring(pos,end);
+		if( text.includes("\n") )
+		{
+			oldStr = text;
+			newStr = "";
+		}
 		if( e.which == 13 ) // ENTER
 		{
 			if( !e.shiftKey )
@@ -670,16 +675,16 @@ function start()
 					tags = newStr;
 				else
 					source = newStr;
-				if( oldStr.includes("|") )
+				if( oldStr.includes("\n") )
 				{
-					for( src of oldStr.split("|").reverse() )
+					for( src of oldStr.split("\n").reverse() )
 					{
 						block_data = JSON.parse(p.attr("block-data"));
 						block_data.icon = "";
 						p.attr("block-data", JSON.stringify(block_data));
 						p.after(renderBlock(makeBlock(), deriveBlockData({"source":src, "tags":tags})));
-						p.next("tr").children("."+blockClass).focus();
 					}
+					p.next("tr").children("."+blockClass).focus();
 					p.remove();
 				}
 				else
