@@ -10,9 +10,12 @@
   "author": "Howchmo",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.16.0",
-    "connect": "^3.5.0",
-    "express": "^4.14.0",
-    "mongodb": "^2.2.20"
+    "body-parser": "^1.19.0",
+    "connect": "^3.7.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "mongodb": "^2.2.20",
+    "serve-index": "^1.9.1",
+    "uuidv4": "^6.2.5"
   }
 }

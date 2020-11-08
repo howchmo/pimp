@@ -71,7 +71,7 @@ function deleteCellById( id )
 
 function onBlockClick( e )
 {
-	var newId = $(e.target).attr("item");	
+	var newId = $(e.target).attr("item").substr(1);	
 	var $item = $(e.target).parents(".item");
 	var id = $item.attr("id");
 	if( !items[id]["children"].includes(newId) )
@@ -235,15 +235,16 @@ function getLink( block )
 	if( str.startsWith("[") )
 	{
 		var n = str.lastIndexOf("](");
-		var link = str.substring(n+3, str.length-1);
-		if( link.startsWith("ttp://") || link.startsWith("ttps://") )
-		{
-			block.icon = '<div class="icon-link"><a href="#" onclick="window.open(\'h'+link+'\')">&#9654;</a></div>';
-		}
-		else
+		var link = str.substring(n+2, str.length-1);
+		if( link.startsWith("#") )
 		{
 			block.link = "<div class=\"icon-link\"><a href=\"#\" item=\""+link+"\" onclick=\"onBlockClick(event);\">&#9654;</a></div>";
 			block.text = str.substring(1, n);
+		}
+		// if( link.startsWith("http://") || link.startsWith("https://") )
+		else
+		{
+			block.icon = '<div class="icon-link"><a href="#" onclick="window.open(\''+link+'\')">&#9654;</a></div>';
 		}
 	}
 	// is it just a link (copy and pasted during research for example)
@@ -328,6 +329,11 @@ function makeBlock()
 		if( block.source != "" && block.datetime == undefined )
 			block.datetime = Date.now();
 		renderBlock($(this).parent(), deriveBlockData(block));
+	});
+
+	$newNote.pastableTextarea().on("pasteImage", function(event, image)
+	{
+		upload(image.dataURL.split(',')[1], ".png");
 	});
 
 	$newTags.blur(function()
@@ -779,4 +785,32 @@ function createLinkedItem( rightIcon ) {
 		var item = block.parents("div[class='item']");
 		saveItem(item);
 	});
+}
+
+function upload( blob, extension )
+{
+	uploadData = {};
+	uploadData.blob = blob;
+	uploadData.extension = extension;
+	$.ajax({
+	  type: 'POST',
+	  url: '/upload',
+		data: JSON.stringify(uploadData),
+	  contentType: 'application/json', // set accordingly
+	  processData: false,
+		success: function(data)
+		{
+			console.log("The uploaded file is here: "+data.path);
+			var imageMd = '[![]('+data.path+')]('+data.path+')';
+			$(document.activeElement).text(imageMd);
+			/*
+			var block = $(document.activeElement).parent();
+			var blockData = JSON.parse(block.attr("block-data"));
+			blockData.source = imageMd;
+			block.attr("block-data", JSON.stringify(blockData));
+			renderBlock(block, blockData);
+			*/
+		}
+	});
+		
 }

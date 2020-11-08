@@ -106,6 +106,24 @@ exports.deleteItem = function(req, res)
 		});
 	});
 }
+
+const {v4: uuid} = require("uuid");
+const fs = require("fs");
+
+exports.uploadFile = function(req, res)
+{
+	var buffer = new Buffer(req.body.blob, 'base64');
+	filename = "files/"+uuid()+req.body.extension;
+	fs.writeFile("public/"+filename, buffer, function(err) {
+		if( err )
+			console.log("err", err);
+		else
+		{
+			console.log("UPLOADED: "+filename);
+			return res.json({"path":filename});
+		}
+	});
+}
  
 /*------------------------------------------------------------------------------------------------*/
 // Populate database with sample data -- Only used once: the first time the application is started.

@@ -82,7 +82,8 @@ table.item-blocks-table {
 }
 
 img {
-	height:115px;
+	/* height:115px; */
+	width:153px;
 	margin-left:auto;
 	margin-right:auto;
 }

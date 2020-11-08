@@ -6,14 +6,19 @@ var path = require('path');
 var pimp = require('./routes/pimp');
 
 var app = express();
+// Serve static files
+const serveIndex = require('serve-index');
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/stuph', express.static('public/stuff'), serveIndex('public/stuff', {'icons': true})); 
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "5000mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/pimp', pimp.findAll);
 app.get('/pimp/:id', pimp.findById);
 app.post('/pimp', pimp.addItem);
+app.post('/upload', pimp.uploadFile);
 app.put('/pimp/:id', pimp.updateItem);
 app.delete('/pimp/:id', pimp.deleteItem);
 
