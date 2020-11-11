@@ -334,6 +334,9 @@ function makeBlock()
 	$newNote.pastableTextarea().on("pasteImage", function(event, image)
 	{
 		upload(image.dataURL.split(',')[1], ".png");
+	})
+	.on('pasteText', function(event, text) {
+		$(document.activeElement).text(text);	
 	});
 
 	$newTags.blur(function()
