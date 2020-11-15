@@ -336,7 +336,13 @@ function makeBlock()
 		upload(image.dataURL.split(',')[1], ".png");
 	})
 	.on('pasteText', function(event, text) {
-		$(document.activeElement).text(text);	
+		var f = $(":focus");
+		var pos = getCaretCharacterOffsetWithin(f[0]);
+		var previousText = f[0].innerText; //.text();
+		var end = previousText.length;
+		var beforeStr = previousText.substring(0,pos);
+		var afterStr = previousText.substring(pos,end);
+		$(document.activeElement).text(beforeStr+text+afterStr);	
 	});
 
 	$newTags.blur(function()
@@ -805,14 +811,14 @@ function upload( blob, extension )
 		{
 			console.log("The uploaded file is here: "+data.path);
 			var imageMd = '[![]('+data.path+')]('+data.path+')';
-			$(document.activeElement).text(imageMd);
-			/*
-			var block = $(document.activeElement).parent();
-			var blockData = JSON.parse(block.attr("block-data"));
-			blockData.source = imageMd;
-			block.attr("block-data", JSON.stringify(blockData));
-			renderBlock(block, blockData);
-			*/
+			var f = $(":focus");
+			var pos = getCaretCharacterOffsetWithin(f[0]);
+			var previousText = f[0].innerText; //.text();
+			var end = previousText.length;
+			var beforeStr = previousText.substring(0,pos);
+			var afterStr = previousText.substring(pos,end);
+			$(document.activeElement).text(beforeStr+imageMd+afterStr);	
+
 		}
 	});
 		
