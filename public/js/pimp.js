@@ -522,19 +522,19 @@ function setEndOfContenteditable(contentEditableElement)
 
 function setSelectionRange(aNode, aOffset)
 {
-	aNode.focus();
+	aNode[0].focus();
 	var sel = window.getSelection(),
 	range = sel.getRangeAt(0);
 	range.collapse(true);
-	if( aNode.childNodes.length > 0 )
-
+	if( aNode[0].childNodes.length > 0 )
 	{
-		range.setStart(aNode.childNodes[0], aOffset);
-//		range.setEnd(aNode.childNodes[0], aOffset);
+		range.setStart(aNode[0].childNodes[0], aOffset);
+		// range.setEnd(aNode[0].childNodes[0], aOffset);
 	}
 	sel.removeAllRanges();
 	sel.addRange(range);
 }
+
 
 function jsonifyItem( item )
 {
@@ -718,9 +718,9 @@ function start()
 		{
 			var prev = p.prev("tr");
 			var prevBlockData = JSON.parse(prev.attr("block-data"));
-			var prevText = prevBlockData.source+text;
+			var prevText = prevBlockData.source+prevBlockData.source.substring(prevBlockData.source.length-1)+text;
 			if( blockClass == "block-tags" )
-				prevText = prevBlockData.tags+text;
+				prevText = prevBlockData.tags+prevBlockData.tags.substring(prevBlockData.tags.length-1)+text;
 			var prevBlock = prev.children("."+blockClass);
 			prevBlock.text(prevText);
 			if( c.text() == "" )
@@ -729,6 +729,8 @@ function start()
 				f.text("");
 			prevBlock.blur();
 			prevBlock.focus();
+			var pos = prevText.length-text.length;
+			setSelectionRange(prevBlock, pos);
 			var item = prev.parents("div[class='item']");
 			saveItem(item);
 		}
