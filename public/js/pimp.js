@@ -718,9 +718,16 @@ function start()
 		{
 			var prev = p.prev("tr");
 			var prevBlockData = JSON.parse(prev.attr("block-data"));
-			var prevText = prevBlockData.source+prevBlockData.source.substring(prevBlockData.source.length-1)+text;
+			var sacrificeCharacter = "";
+			if( prevBlockData.source.length > 0 )
+				sacrificeCharacter = prevBlockData.source.substring(prevBlockData.source.length-1); 
+			var prevText = prevBlockData.source+sacrificeCharacter+text;
 			if( blockClass == "block-tags" )
-				prevText = prevBlockData.tags+prevBlockData.tags.substring(prevBlockData.tags.length-1)+text;
+			{
+				if( prevBlockData.source.length > 0 )
+					sacrificeCharacter = prevBlockData.source.substring(prevBlockData.source.length-1); 
+				prevText = prevBlockData.tags+sacrificeCharacter+text;
+			}
 			var prevBlock = prev.children("."+blockClass);
 			prevBlock.text(prevText);
 			if( c.text() == "" )
