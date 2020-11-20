@@ -595,8 +595,6 @@ function saveItemIfDirty( p )
 	}
 }
 
-
-
 function start()
 {
 	$(function() { //DOM Ready
@@ -826,8 +824,8 @@ function upload( blob, extension )
 			var end = previousText.length;
 			var beforeStr = previousText.substring(0,pos);
 			var afterStr = previousText.substring(pos,end);
-			$(document.activeElement).text(beforeStr+imageMd+afterStr);	
-
+			$(document.activeElement).text(beforeStr+imageMd+afterStr);
+			setSelectionRange($(document.activeElement), pos+imageMd.length);
 		}
 	});
 		

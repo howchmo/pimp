@@ -26,7 +26,7 @@ var port = 443;
 
 https.createServer({
 	key: fs.readFileSync('pimp.key'),
-	cert: fs.readFileSync('pimp.cert')
+	cert: fs.readFileSync('pimp.crt')
 }, app)
 .listen(port, function () {
 	console.log('Listening on port '+port+'...');
