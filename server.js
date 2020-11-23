@@ -20,6 +20,8 @@ app.get('/pimp/:id', pimp.findById);
 app.post('/pimp', pimp.addItem);
 app.post('/upload', pimp.uploadFile);
 app.put('/pimp/:id', pimp.updateItem);
+app.put('/pimp/prepend/:id', pimp.prependToItem);
+app.put('/pimp/append/:id', pimp.appendToItem);
 app.delete('/pimp/:id', pimp.deleteItem);
 
 var port = 443;

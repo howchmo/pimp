@@ -107,6 +107,64 @@ exports.deleteItem = function(req, res)
 	});
 }
 
+exports.appendToItem = function( req, res )
+{
+	var id = req.params.id;
+	console.log('Retrieving item: ' + id);
+	db.collection('items', function(err, collection)
+	{
+		var oid = new ObjectID(id);
+		collection.find({'_id':oid}).limit(1).next( function(err, item)
+		{
+			item.doc.push(req.body);
+			db.collection('items').updateOne({'_id':ObjectID(id)}, item, {safe:true},
+				function(err, result)
+				{
+					if (err)
+					{
+						console.log('Error updating item: ' + err);
+						res.send({'error':'An error has occurred'});
+					}
+					else
+					{
+						console.log('' + result + ' document(s) updated');
+						res.send({"updated":id});
+					}
+				}
+			);
+		});
+	});
+};
+
+exports.prependToItem = function( req, res )
+{
+	var id = req.params.id;
+	console.log('Retrieving item: ' + id);
+	db.collection('items', function(err, collection)
+	{
+		var oid = new ObjectID(id);
+		collection.find({'_id':oid}).limit(1).next( function(err, item)
+		{
+			item.doc.unshift(req.body);
+			db.collection('items').updateOne({'_id':ObjectID(id)}, item, {safe:true},
+				function(err, result)
+				{
+					if (err)
+					{
+						console.log('Error updating item: ' + err);
+						res.send({'error':'An error has occurred'});
+					}
+					else
+					{
+						console.log('' + result + ' document(s) updated');
+						res.send({"updated":id});
+					}
+				}
+			);
+		});
+	});
+};
+
 const {v4: uuid} = require("uuid");
 const fs = require("fs");
 
