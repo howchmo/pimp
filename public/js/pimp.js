@@ -343,6 +343,7 @@ function makeBlock()
 		var beforeStr = previousText.substring(0,pos);
 		var afterStr = previousText.substring(pos,end);
 		$(document.activeElement).text(beforeStr+text+afterStr);	
+		setSelectionRange($(document.activeElement), pos+text.length);
 	});
 
 	$newTags.blur(function()
