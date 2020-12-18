@@ -10,3 +10,5 @@ https://en.wikipedia.org/wiki/Chandler_(software)
 It is a Semi-structured Wiki + Sort of a Spreadsheet + Digital Cornell Note Taker + Graph*-ish* Database
 
 The name is an homage to the G.I.M.P. and was suggested by Seth Frolich
+
+![Picture](https://99.117.186.91/files/f1c521af-a706-47cd-bbf7-6f9ca868bff6.png)
