@@ -668,7 +668,7 @@ function start()
 		if( blockClass == "block-tags" )
 			c = p.children(".block-note");
 		var pos = getCaretCharacterOffsetWithin(f[0]);
-		var text = f[0].innerHTML; // .innerText; //.text();
+		var text = f[0].innerText; // innerHTML; // .innerText; //.text();
 		var end = text.length;
 		var oldStr = text.substring(0,pos);
 		var newStr = text.substring(pos,end);
