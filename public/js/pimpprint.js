@@ -75,7 +75,7 @@ function printItem( item )
 						{
 							urls.push(url);
 							indent++;
-							p += "<dd>"+text+"</dd>";
+							// p += "<dd>"+text+"</dd>";
 							ajaxLoad("pimp/"+url.substring(1), ajaxOnResult);
 						}
 					}

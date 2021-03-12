@@ -186,7 +186,7 @@ var icons = {
 	"-":"<div class='checkbox unchecked'><input type='checkbox' onclick='checkBox(this); return false;'></input></div>",
 	"%":"<span class='clock-icon bullet'>&#128338;</span>",
 	"!":"<span class='idea-icon bullet'>&#128161;</span>",
-	"?":"<span class='question-icon bullet'>&#0;</span>"
+	"?":"<span class='question-icon bullet'>&#10068;</span>"
 };
 
 function makeItem(id)
