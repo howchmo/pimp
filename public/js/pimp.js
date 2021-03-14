@@ -8,6 +8,7 @@ function pruneBlock(id)
 {
 	console.log("pruneBock("+id+")");
 	var parentId = items[id]["parent"];
+	var openlink = $("#"+parentId).find("a[item="+"#"+id+"]")[0];
 	var children = items[parentId]["children"];
 	pruneBlocks(id);
 	// check to see if the parent is empty to the right
@@ -32,6 +33,7 @@ function pruneBlock(id)
 		}
 	}
 	// TASK: re-establish the onclick functions
+	$(openlink).html("▶")
 }
 
 function pruneBlocks(id)
@@ -785,40 +787,44 @@ function saveItem( item ) {
 }
 
 function createLinkedItem( rightIcon ) {
-	var block = rightIcon.parent().parent().parent();
-	var tags = block.find(".block-tags").text();
-	var blocknote = block.find(".block-note");
-	var text = blocknote.text();
-	if( text == "" )
+	if( $(rightIcon).html() === "█" )
 	{
-		blocknote.text(" ");
-		text = " ";
+		$(rightIcon).html("&#8987;");
+		var block = rightIcon.parent().parent().parent();
+		var tags = block.find(".block-tags").text();
+		var blocknote = block.find(".block-note");
+		var text = blocknote.text();
+		if( text == "" )
+		{
+			blocknote.text(" ");
+			text = " ";
+		}
+		// Create a new item in the database that is blank
+		var li = {};
+		li["title"] = text;
+		li["born"] = new Date();
+		li["doc"] = [{"":{ "text":"" }}];
+		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
+		$.post("pimp/", {"string":si}, function(data)
+		{
+			// With the new link returned from the database change the block to a linked block
+			var link = "#"+data;
+			var source = "["+text+"]("+link+")";
+			var blockData = {
+				"tags":tags,
+				"source":source,
+				"datetime":li["born"],
+				"id":data
+			};
+			blockData = deriveBlockData(blockData);
+			renderBlock( block, blockData);
+			var e = {};
+			e.target = block.find(".icon-link a:first-child");
+			onBlockClick(e);
+			var item = block.parents("div[class='item']");
+			saveItem(item);
+		});
 	}
-	// Create a new item in the database that is blank
-	var li = {};
-	li["title"] = text;
-	li["born"] = new Date();
-	li["doc"] = [{"":{ "text":"" }}];
-	var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
-	$.post("pimp/", {"string":si}, function(data)
-	{
-		// With the new link returned from the database change the block to a linked block
-		var link = "#"+data;
-		var source = "["+text+"]("+link+")";
-		var blockData = {
-			"tags":tags,
-			"source":source,
-			"datetime":li["born"],
-			"id":data
-		};
-		blockData = deriveBlockData(blockData);
-		renderBlock( block, blockData);
-		var e = {};
-		e.target = block.find(".icon-link a:first-child");
-		onBlockClick(e);
-		var item = block.parents("div[class='item']");
-		saveItem(item);
-	});
 }
 
 function upload( blob, extension )
