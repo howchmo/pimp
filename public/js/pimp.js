@@ -69,7 +69,7 @@ function deleteCellById( id )
 			row.deleteCell(x);
 }
 
-function onBlockClick( e )
+function createNewItem( e, data )
 {
 	var newId = $(e.target).attr("item").substr(1);	
 	var $item = $(e.target).parents(".item");
@@ -118,11 +118,28 @@ function onBlockClick( e )
 	
 		var $newItem = makeItem(newId);
 		$(newCell).append($newItem);
-		$.get("pimp/"+newId, function(data) {
-			populate(data);
-		});
+		populate(data);
 		items[id]["children"].push(newId);
 		items[newId] = {"children":[],"parent":id};
+	}
+}
+
+function blockClickedEffect( clickedBlock )
+{
+	$(clickedBlock).html("&#8987;"); // HOURGLASS
+}
+
+function onBlockClick( e )
+{
+	if( $(e.target).html() === "▶" )
+	{
+		console.log("CLICK");
+		blockClickedEffect($(e.target));
+		var newId = $(e.target).attr("item").substr(1);	
+		$.get("pimp/"+newId, function(data) {
+			createNewItem( e, data );
+			$(e.target).html("&#9501;");// LINKED OUT
+		});
 	}
 }
 
