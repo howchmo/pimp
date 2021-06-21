@@ -1,17 +1,20 @@
 body {
 	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
-	background-image: linear-gradient(90deg, grey, white);
+	/* background-image: linear-gradient(90deg, grey, white); */
+	background-image: url("../assets/background.png");
+	background-repeat: repeat;
 }
 
 a {
 	text-decoration:none;
 }
 
+/*
 .table-items-td {
-	height:240px;
-	width:240px;
-/*	border: solid 1px red; */
+	height:150px;
+	width:300px;
 }
+*/
 
 .item-header {
 	background:grey;
@@ -42,7 +45,7 @@ a {
 .title-button-container {
 	position:relative;
 	top:-10px;
-	right:-72px;
+	right:-84px;
 	transform: scale(0.4,0.4);
 	height:2px;
 }
@@ -174,15 +177,15 @@ img {
 
 .item {
 	margin:6px;
-	max-width:240px;
-	height:240px;
+	width:280px;
+	height:150px;
 	border:black 1px solid;
 }
 
 .item-content-wrapper {
 	position:relative;
 	overflow-y:scroll;
-	height:217px;
+	height:130px;
 	width:100%;
 	top:-23px;
 	background:gray;

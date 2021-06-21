@@ -807,22 +807,29 @@ function createLinkedItem( rightIcon ) {
 		var si = JSON.stringify(li, function(key, value) { return value === "" ? "" : value });
 		$.post("pimp/", {"string":si}, function(data)
 		{
-			// With the new link returned from the database change the block to a linked block
-			var link = "#"+data;
-			var source = "["+text+"]("+link+")";
-			var blockData = {
-				"tags":tags,
-				"source":source,
-				"datetime":li["born"],
-				"id":data
-			};
-			blockData = deriveBlockData(blockData);
-			renderBlock( block, blockData);
-			var e = {};
-			e.target = block.find(".icon-link a:first-child");
-			onBlockClick(e);
-			var item = block.parents("div[class='item']");
-			saveItem(item);
+		  if( data == "undefined" )
+			{
+				alert("Item is undefined!");
+			}
+			else
+			{
+							// With the new link returned from the database change the block to a linked block
+							var link = "#"+data;
+							var source = "["+text+"]("+link+")";
+							var blockData = {
+								"tags":tags,
+								"source":source,
+								"datetime":li["born"],
+								"id":data
+							};
+							blockData = deriveBlockData(blockData);
+							renderBlock( block, blockData);
+							var e = {};
+							e.target = block.find(".icon-link a:first-child");
+							onBlockClick(e);
+							var item = block.parents("div[class='item']");
+							saveItem(item);
+			}
 		});
 	}
 }

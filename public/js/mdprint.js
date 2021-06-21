@@ -50,7 +50,7 @@ function mdprint( item )
 {
 	console.log("mdprint");
 	printItem(item);
-	p += '<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>';
+	p += '<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="js/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>';
 }
 
 function printItem( item )
@@ -91,8 +91,12 @@ function printItem( item )
 							ajaxLoad("pimp/"+url.substring(1), ajaxOnResult);
 						}
 					}
+					else
+					{
+						p += line;
+					}
 				}
-				else if( line.startsWith("http") )
+				else if( line.startsWith("http") || line.startsWith("https") )
 				{
 					p += "["+line+"]("+line+")"
 				}
