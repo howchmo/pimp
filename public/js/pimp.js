@@ -94,7 +94,8 @@ function createNewItem( e, data )
 				while( $table[0].rows[newy].cells[newx].children.length == 0 )
 					newy++;
 			}
-			newy++;
+			newy++;;
+
 			while( rowToRightIsNotEmpty(newx, newy ) )
 			{
 				newy++;
@@ -786,19 +787,22 @@ function saveItem( item ) {
 	}
 }
 
-function createLinkedItem( rightIcon ) {
+function createLinkedItem( rightIcon )
+{
 	if( $(rightIcon).html() === "█" )
 	{
 		$(rightIcon).html("&#8987;");
 		var block = rightIcon.parent().parent().parent();
 		var tags = block.find(".block-tags").text();
 		var blocknote = block.find(".block-note");
-		var text = blocknote.text();
+		var text = JSON.parse(block.attr('block-data')).source;
+	  // text = blocknote.text();
 		if( text == "" )
 		{
 			blocknote.text(" ");
 			text = " ";
 		}
+
 		// Create a new item in the database that is blank
 		var li = {};
 		li["title"] = text;

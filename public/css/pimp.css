@@ -44,6 +44,7 @@ a {
 
 .title-button-container {
 	position:relative;
+	position:relative;
 	top:-10px;
 	right:-84px;
 	transform: scale(0.4,0.4);
