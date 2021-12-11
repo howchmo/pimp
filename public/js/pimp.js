@@ -455,6 +455,7 @@ function createFirstItem(id)
 	$("table tr td").append($item);
 	$.get("pimp/"+id, function(data) {
 		populate(data);
+		document.title = data.title;
 	});
 }
 

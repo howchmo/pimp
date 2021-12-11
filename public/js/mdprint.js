@@ -134,11 +134,11 @@ function start()
 	$(function() {
 		itemId = window.location.hash.substr(1);
 		urls.push("#"+itemId);
-		ajaxLoad("pimp/"+itemId, firstAjaxOnResult);		
-		var newDoc = document.open("text/html", "replace");
-		newDoc.write(p);
-		newDoc.close();
-		// $("body").append(p);
+		ajaxLoad("pimp/"+itemId, firstAjaxOnResult);
+		$("body").html(p);
+		// var newDoc = document.open("text/html", "replace");
+		// newDoc.write(p);
+		// newDoc.close();
 	});
 }	
 
