@@ -10,7 +10,7 @@
 	{
 		var returnStr = escape(s)
 			.replace(/!\[([^\]]*)]\(([^(]+)\)/g, '<img alt="$1" src="$2">')
-			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '<span href="$2" class="link" onmousedown="linkClick(\'$2\');">$1</span>')
+			.replace(/\[([^\]]+)]\(([^(]+)\)/g, '<a href="$2" class="link" onmousedown="linkClick(\'$2\');">$1</a>')
 			.replace(/<a /g, '<a class="link" ')
 			.replace(/ \| /g, '</td><td>')
 			.replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -30,7 +30,7 @@
 		{
 			'*':[/\n\* /,'<li>','</li>'],
 			// '1':[/\n[1-9]\d*\.? /,'<ol><li>','</li></ol>'],
-			' ':[/\n    /,'<pre><code>','</pre></code>','\n'],
+			' ':[/\n    /,'<pre><code>','</code></pre>','\n'],
 			'>':[/\n> /,'<blockquote>','</blockquote>','\n'],
 //			'+':[/\n\+ /,'<input type="checkbox">',''],
 //			'-':[/\n\- /,'<input type="checkbox" checked>',''],

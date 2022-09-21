@@ -105,10 +105,10 @@ function renderHtml( source, blockIdx )
 	if( html.startsWith("<span href=\"") )
 	{
 		var link = extractHrefFromLink(html);
-		html = toHtml(extractTextFromLink(html));
 		$linkBlock = $(".link-block[block="+blockIdx+"]");
 		$linkBlock.html("<span class='link-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$linkBlock.attr("link",link);
+		//html = toHtml(extractTextFromLink(html));
 	}
 	else
 	{
@@ -125,7 +125,7 @@ function renderHtml( source, blockIdx )
 		$(".left-icon-block[block="+blockIdx+"]").html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
 		$(".left-icon-block[block="+blockIdx+"]").attr("link",link);
 		var $linkBlock = $(".link-block[block="+blockIdx+"]");
-		$linkBlock.html("<span class='left-icon'><a target='_blank' href='"+link+"'>"+LINK+"</a></span>");
+		$linkBlock.html("<span class='left-icon'><a target='_blank' hrref='"+link+"'>"+LINK+"</a></span>");
 		$linkBlock.attr("link", link);
 	}
 	else if( html.startsWith("&#0;&nbsp;") )
@@ -359,6 +359,61 @@ function jsonifyItem()
 	return jitem;
 }
 
+
+
+function htmlifyItem()
+{
+	var listmode = false;
+	var first_time_thru = false;
+	var jitem = "<html>\n<body>\n"
+	var title_text = $(".item-title").html();
+	if( title_text != "" )
+	{
+		jitem += title_text+"<br/>\n";
+	}	
+	jitem += "<i>"+(new Date())+"</i>\n<br/>\n";
+	$("#item-blocks-table-body").children("tr").each(function() {
+		var key = $(this).find(".left-text-block").text();
+		if( key != "" )
+		{
+			jitem += "<h1>"+key+"</h1>\n";
+		}
+		var $rightTextBlock = $(this).find(".right-text-block");
+		value = $rightTextBlock.html();
+		if( value.startsWith("http://") || value.startsWith("https://") || value.startsWith("file:////") )
+		{
+			value = '<a href="'+value+'">'+value+'</a>';
+		}
+		else if( value.startsWith("<li>") && !listmode )
+		{
+			listmode = true;
+			jitem += "<ul>\n";
+		}
+		else if( !value.startsWith("<li>") && listmode )
+		{
+			listmode = false;
+			jitem += "</ul>\n";
+		}
+		var icon = $(this).find(".left-icon-block > .left-icon").html();
+		console.log("ICON = "+icon);
+		if( !icon.startsWith("<a") && icon != "&nbsp;" )
+		{
+			jitem += icon;
+		}
+		jitem += value;
+		if( !listmode )
+					jitem += "<br/>\n";
+		else
+					jitem += "\n";
+	});
+	jitem += "</body>\n</html>\n";
+	return jitem;
+}
+
+function markdownifyItem()
+{
+}
+
 function padZero( number )
 {
 	if( number < 10 )
@@ -372,6 +427,14 @@ function generateDateTimeBlock( datetime )
 	var timestr = padZero(datetime.getHours())+":"+padZero(datetime.getMinutes())+":"+padZero(datetime.getSeconds());
 	str = "<span class='date-string'>"+datestr+"</span><br><span class='time-string'>"+timestr+"</span>";
 	return(str);
+}
+
+function copyItemToClipboard()
+{
+	var htmlItem = htmlifyItem();
+	console.log(htmlItem);
+	window.open("").document.write(htmlItem);	
+
 }
 
 function start()
@@ -389,6 +452,10 @@ function start()
 
 		$(".unhide-button").click(function() {
 			saveItem();
+		});
+
+		$(".htmlprint-button").click(function() {
+			copyItemToClipboard();
 		});
 
 		$(".close-button").click(function() {
